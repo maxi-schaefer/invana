@@ -1,0 +1,83 @@
+# ---- General ----
+*.log
+*.tmp
+*.swp
+*.DS_Store
+*.env
+.env.local
+
+# ---- IntelliJ IDEA ----
+.idea/
+*.iml
+*.iws
+out/
+
+# ---- Maven ----
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+
+# ---- Java ----
+*.class
+*.jar
+*.war
+*.ear
+
+# ---- Spring Boot ----
+# Logs
+logs/
+*.log
+
+# Database
+*.h2.db
+*.mv.db
+*.trace.db
+*.db
+
+# Spring config
+application.properties
+application.yml
+application-dev.yml
+application-prod.yml
+application-test.yml
+*.secret.*
+*.key
+*.crt
+
+# ---- React Frontend (/frontend) ----
+/frontend/node_modules/
+/frontend/build/
+/frontend/.env
+/frontend/.env.local
+/frontend/.env.development.local
+/frontend/.env.test.local
+/frontend/.env.production.local
+/frontend/npm-debug.log*
+/frontend/yarn-debug.log*
+/frontend/yarn-error.log*
+/frontend/.parcel-cache/
+
+# ---- OS Specific ----
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ---- Optional Extras ----
+# Uncomment if using VSCode
+# .vscode/
+
+# Uncomment if using test or coverage output
+# coverage/
+# test-output/
