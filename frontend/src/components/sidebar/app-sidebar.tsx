@@ -69,7 +69,7 @@ export function AppSidebar({ activeSection = "dashboard", onSectionChange }: App
                             {
                                 menuItems.map((item) => (
                                     <SidebarMenuItem key={item.id}>
-                                        <SidebarMenuButton className={`${activeSection === item.id ? "border-l-2 border-primary" : ""}`} isActive={activeSection === item.id} onClick={() => onSectionChange?.(item.id)}>
+                                        <SidebarMenuButton className={`${activeSection === item.id ? "border-l-2 border-primary" : "border-l-2 border-transparent"}`} isActive={activeSection === item.id} onClick={() => onSectionChange?.(item.id)}>
                                             <item.icon className='h-4 w-4' />
                                             <span>{item.title}</span>
                                         </SidebarMenuButton>
