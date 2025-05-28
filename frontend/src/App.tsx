@@ -1,22 +1,15 @@
-import { useState } from 'react'
 import './App.css'
-import { Button } from './components/ui/button'
+import Dashboard from './components/dashboard/dashboard'
+import { AppSidebar } from './components/sidebar/app-sidebar'
+import { ThemeProvider } from './components/theme-provider'
+import { SidebarProvider } from './components/ui/sidebar'
 
 function App() {
-  const [msg, setMsg] = useState("")
-
-  const fetchMessage = async () => {
-    fetch('/api/hello')
-    .then(res => res.text())
-    .then(setMsg);
-  }
 
   return (
-    <>
-      <h1 className='text-2xl'>{msg}</h1>
-
-      <Button onClick={fetchMessage}>Fetch Message</Button>      
-    </>
+    <ThemeProvider defaultTheme='system' storageKey='ui-theme'>
+      <Dashboard />
+    </ThemeProvider>
   )
 }
 
