@@ -5,6 +5,7 @@ import { ModeToggle } from '../ui/theme-toggle';
 import DashboardOverview from './dashboard-overview';
 import ScriptLibrary from './script-library';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '../ui/breadcrumb';
+import ServerInventory from './server-inventory';
 
 export default function DashboardContent() {
     const [activeSection, setActiveSection] = React.useState<string>('dashboard');
@@ -15,6 +16,8 @@ export default function DashboardContent() {
                 return <DashboardOverview />;
             case "scripts":
                 return <ScriptLibrary />
+            case 'servers':
+                return <ServerInventory />;
             default:
                 return <DashboardOverview />;
         }
