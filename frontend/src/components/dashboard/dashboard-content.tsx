@@ -3,6 +3,7 @@ import { AppSidebar } from '../sidebar/app-sidebar'
 import { SidebarInset, SidebarTrigger } from '../ui/sidebar'
 import { ModeToggle } from '../ui/theme-toggle';
 import DashboardOverview from './dashboard-overview';
+import ScriptLibrary from './script-library';
 
 export default function DashboardContent() {
     const [activeSection, setActiveSection] = React.useState<string>('dashboard');
@@ -11,6 +12,8 @@ export default function DashboardContent() {
         switch (activeSection){
             case 'dashboard':
                 return <DashboardOverview />;
+            case "scripts":
+                return <ScriptLibrary />
             default:
                 return <DashboardOverview />;
         }

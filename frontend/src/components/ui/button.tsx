@@ -50,10 +50,10 @@ function Button({
   return (
     <Comp
       data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }), "cursor-pointer transition-all duration-75")}
+      className={cn(buttonVariants({ variant, size, className }), "cursor-pointer transition-all duration-300")}
       {...props}
     />
   )
 }
 
-export { Button, buttonVariants }
+export { Button }

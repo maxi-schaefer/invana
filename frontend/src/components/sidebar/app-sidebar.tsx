@@ -1,4 +1,4 @@
-import { Activity, Code2, Database, History, Home, Package, Server, Settings } from 'lucide-react'
+import { Activity, Database, History, Home, Library, Package, Server, Settings } from 'lucide-react'
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '../ui/sidebar';
 
 // Menu item variables
@@ -20,7 +20,7 @@ const menuItems = [
     },
     {
       title: "Script Library",
-      icon: Code2,
+      icon: Library,
       id: "scripts",
     },
     {
@@ -59,9 +59,6 @@ export function AppSidebar({ activeSection = "dashboard", onSectionChange }: App
                 )}
             </div>
         </SidebarHeader>
-
-
-
             <SidebarContent>
 
                 {/* Navigation Group */}
