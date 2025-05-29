@@ -38,4 +38,24 @@ public class AuthenticationController {
         return ResponseEntity.ok(loginResponse);
     }
 
+    @GetMapping("/validate")
+    public ResponseEntity<?> validateToken(@RequestHeader("Authorization") String authHeader) {
+        if(authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(401).body("Missing or invalid Authorization header");
+        }
+
+        String token = authHeader.substring(7);
+
+        try {
+            boolean isValid = jwtService.isTokenValid(token);
+            if(isValid) {
+                return ResponseEntity.ok("Token is valid!");
+            } else {
+                return ResponseEntity.status(401).body("Invalid or expired token");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body("Invalid token: " + e.getMessage());
+        }
+    }
+
 }

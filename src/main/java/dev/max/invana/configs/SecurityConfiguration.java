@@ -36,10 +36,8 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> req
                         // Permit all public endpoints
-                        .requestMatchers("/", "/dashboard/**", "/api/auth/**").permitAll()
-                        // Require authentication for other /api/** endpoints
+                        .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/**").authenticated()
-                        // Allow all other requests (optional: deny by default if not required)
                         .anyRequest().permitAll()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
