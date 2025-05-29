@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import Loading from '@/components/ui/loading';
 
 export default function Login() {
     const navigate = useNavigate();
@@ -20,7 +21,7 @@ export default function Login() {
     const [rememberMe, setRememberMe] = useState(false);
     const { isAuthenticated, loading } = useAuth();
 
-    if(loading) return <div>Loading...</div>
+    if(loading) return <Loading />
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
