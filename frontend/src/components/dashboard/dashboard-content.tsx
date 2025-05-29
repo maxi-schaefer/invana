@@ -6,6 +6,7 @@ import DashboardOverview from './dashboard-overview';
 import ScriptLibrary from './script-library';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '../ui/breadcrumb';
 import ServerInventory from './server-inventory';
+import VersionHistory from './version-history';
 
 export default function DashboardContent() {
     const [activeSection, setActiveSection] = React.useState<string>('dashboard');
@@ -18,6 +19,8 @@ export default function DashboardContent() {
                 return <ScriptLibrary />
             case 'servers':
                 return <ServerInventory />;
+            case 'history':
+                return <VersionHistory />;
             default:
                 return <DashboardOverview />;
         }
@@ -27,6 +30,7 @@ export default function DashboardContent() {
         <>
             <AppSidebar activeSection={activeSection} onSectionChange={setActiveSection} />
             <SidebarInset>
+              
                 <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
                     <SidebarTrigger className='-ml-1 cursor-pointer' />
                     <Breadcrumb>

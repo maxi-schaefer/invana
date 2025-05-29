@@ -2,10 +2,11 @@ import type ServerType from "@/types/ServerType";
 import { useState } from "react"
 import { Dialog, DialogTrigger } from "../ui/dialog";
 import { Button } from "../ui/button";
-import { Cpu, HardDrive, Monitor, Plus, Server } from "lucide-react";
+import { Cpu, HardDrive, Monitor, MoreHorizontalIcon, Plus, Server, Settings, Trash } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { getBadgeStyle } from "@/lib/utils";
 import { Badge } from "../ui/badge";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
 export default function ServerInventory() {
     const [servers, setServers] = useState<ServerType[]>([
@@ -116,6 +117,35 @@ export default function ServerInventory() {
                                     </div>
 
                                     <div className="text-sm text-muted-foreground">Last check: {server.lastCheck}</div>
+                                </div>
+
+                                <div className="flex justify-end">
+                                    {/* Actions Menu */}
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" size="icon">
+                                                <MoreHorizontalIcon className="h-4 w-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuItem>
+                                                <Settings className="h-4 w-4 mr-2" />
+                                                Settings
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem>
+                                                <Monitor className="h-4 w-4 mr-2" />
+                                                Check Status
+                                            </DropdownMenuItem>
+                                            
+                                            <DropdownMenuSeparator />
+
+                                            <DropdownMenuItem className="text-destructive focus:text-destructive">
+                                                <Trash className="h-4 w-4 mr-2 text-destructive" />
+                                                Remove
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
                                 </div>
                             </CardContent>
                         </Card>
