@@ -53,7 +53,7 @@ export function AppSidebar({ activeSection = "dashboard", onSectionChange }: App
 
                 {useSidebar().open && (
                     <div className="flex flex-col items-start">
-                        <span className="font-semibold text-lg text-primary">Ivana</span>
+                        <span className="font-semibold text-lg text-primary">Invana</span>
                         <span className="text-xs text-muted-foreground">Inventory Manager</span>
                     </div>
                 )}

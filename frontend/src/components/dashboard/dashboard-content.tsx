@@ -37,7 +37,7 @@ export default function DashboardContent() {
                         <BreadcrumbList>
                             <BreadcrumbItem>
                                 <BreadcrumbLink href='#' className='text-muted-foreground'>
-                                    Ivana
+                                    Invana
                                 </BreadcrumbLink>
                             </BreadcrumbItem>
 

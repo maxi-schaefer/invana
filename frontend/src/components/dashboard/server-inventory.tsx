@@ -9,7 +9,7 @@ import { Badge } from "../ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
 export default function ServerInventory() {
-    const [servers, setServers] = useState<ServerType[]>([
+    const [servers] = useState<ServerType[]>([
         {
             id: 1,
             name: "prod-web-01",

@@ -1,4 +1,4 @@
-# ivana (develop)
+# invana (develop)
 
 ![dashboard](./assets//dashboard.jpeg)
 
