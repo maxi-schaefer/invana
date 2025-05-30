@@ -1,4 +1,5 @@
 import { authApi } from "@/api/impl/authApit";
+import type { User } from "@/types/User";
 
 export const getToken = () => localStorage.getItem("token");
 
@@ -19,4 +20,8 @@ export const isAuthenticated = async () => {
     } catch(e) {
         return false;
     }
+}
+
+export const isAdmin = (user: User) => {
+    return user.role === "ADMIN";
 }

@@ -4,6 +4,7 @@ import dev.max.invana.entities.User;
 import dev.max.invana.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -16,18 +17,23 @@ public class StartupRunner implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Value("${invana.defaultAdminEmail}")
+    private String defaultAdminEmail;
+
+    @Value("${invana.defaultAdminPassword}")
+    private String defaultAdminPassword;
 
     @Override
     public void run(String... args) throws Exception {
         if(userRepository.count() == 0) {
             User admin = new User();
             admin.setFullName("Default Admin");
-            admin.setEmail("admin@example.com");
-            admin.setPassword(passwordEncoder.encode("admin123"));
+            admin.setEmail(defaultAdminEmail);
+            admin.setPassword(passwordEncoder.encode(defaultAdminPassword));
             admin.setRole(User.Role.ADMIN);
 
             userRepository.save(admin);
-            log.info("✅ Default admin user created: admin@example.com / admin123");
+            log.info("✅ Default admin user created: " + defaultAdminEmail + " / " + defaultAdminPassword);
         } else {
             log.info("Users already exist. Skipping default admin creation.");
         }

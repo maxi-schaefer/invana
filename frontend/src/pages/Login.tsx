@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from 'react'
 import { Database, Eye, EyeOff, Lock, Mail } from 'lucide-react';
 import { Navigate, useNavigate } from 'react-router-dom';
@@ -11,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import Loading from '@/components/ui/loading';
+import { toast } from 'sonner';
 
 export default function Login() {
     const navigate = useNavigate();
@@ -20,19 +22,27 @@ export default function Login() {
     const [password, setPassword] = useState("");
     const [rememberMe, setRememberMe] = useState(false);
     const { isAuthenticated, loading } = useAuth();
+    const [iLoading, setLoading] = useState(false);
 
     if(loading) return <Loading />
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        setLoading(true);
+
         try {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const res: any = await authApi.login({ email, password });
     
+            toast.success(`👋 Welcome back ${res.data.user.fullName}`);
+            
+            setLoading(false);
             login(res.data.token, res.data.user);
             navigate("/dashboard");
         } catch (error) {
-            alert(error);
+            toast.error(`Invalid email or password`);
+            setLoading(false);
         }
 
         console.log("login");
@@ -61,7 +71,7 @@ export default function Login() {
                 {/* Login Card */}
                 <Card className='min-w-md relative sm:min-w-sm'>
                     <CardHeader>
-                        <CardTitle className='text-2xl font-bold text-primary'>👋 Welcome back</CardTitle>
+                        <CardTitle className='text-2xl font-bold text-primary'>Welcome back</CardTitle>
                         <CardDescription>Sign in to your account to continue</CardDescription>
                     </CardHeader>
 
@@ -110,7 +120,9 @@ export default function Login() {
                             </div>
 
                             <Button type='submit'className='w-full h-11'>
-                                Sign in
+                                {iLoading ? (
+                                    <div className="animate-spin rounded-full border-2 border-gray-400 border-t-gray-900 h-5 w-5"/>
+                                ) : ("Sign in")}
                             </Button>
                         </form>
                     </CardContent>

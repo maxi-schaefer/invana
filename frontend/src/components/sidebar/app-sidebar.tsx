@@ -1,4 +1,4 @@
-import { Activity, Database, History, Home, Library, LogOut, Package, Server, Settings, UserCog } from 'lucide-react'
+import { Activity, Database, History, Home, Library, LogOut, LucideFileCog, Package, Server, Settings, UserCog } from 'lucide-react'
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '../ui/sidebar';
 import { useAuth } from '@/hooks/use-auth';
 import { DropdownMenu, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu';
@@ -6,6 +6,8 @@ import { Avatar, AvatarFallback } from '@radix-ui/react-avatar';
 import { AvatarImage } from '../ui/avatar';
 import DefaultAvatar from '../../assets/DefaultAvatar.svg'
 import { DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '../ui/dropdown-menu';
+import { isAdmin } from '@/utils/auth';
+import type { User } from '@/types/User';
 
 // Menu item variables
 const menuItems = [
@@ -39,6 +41,12 @@ const menuItems = [
       icon: Activity,
       id: "monitoring",
     },
+    {
+        title: "Agent Settings",
+        icon: LucideFileCog,
+        id: "agents",
+        admin: true
+    }
 ]
 
 // AppSidebar interface
@@ -52,58 +60,59 @@ export function AppSidebar({ activeSection = "dashboard", onSectionChange }: App
     const { user, logout } = useAuth();
 
     return (
-        <Sidebar collapsible='icon' >
+        <Sidebar collapsible='icon' variant='inset' >
         <SidebarHeader className="border-b border-sidebar-border">
             <div className="flex items-center gap-2 px-2 py-2">
-                <div className={`flex ${useSidebar().open ? "h-8 w-8" : "h-6 w-6"} aspect-square items-center justify-center rounded-lg bg-primary`}>
-                    <Database className={`${useSidebar().open ? "h-5 w-5" : "h-4 w-4"} text-primary-foreground`} />
-                </div>
 
-                {useSidebar().open && (
-                    <div className='flex w-full justify-between'>
+                {(
+                    <div className={`${!useSidebar().open && "hidden"} flex w-full items-center gap-2`}>
+                        <div className="aspect-square h-8 w-8 bg-primary flex items-center justify-center rounded-lg">
+                            <Database className={`h-5 w-5 text-primary-foreground`} />
+                        </div>
                         <div className="flex flex-col items-start">
                             <span className="font-semibold text-lg text-primary">Invana</span>
-                            <span className="text-xs text-muted-foreground">Inventory Manager</span>
+                            <span className="text-xs text-muted-foreground -mt-2">Inventory Manager</span>
                     
                         </div>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <button className="flex items-center gap-2 rounded-lg p-1 hover:bg-sidebar-accent transition-colors cursor-pointer">
-                                    <Avatar className='h-8 w-8'>
-                                        <AvatarImage className='rounded-full' src={"https://avatars.githubusercontent.com/u/124599?v=4"} alt={user?.fullName} />
-                                        <AvatarFallback><img src={DefaultAvatar} alt="" /></AvatarFallback>
-                                    </Avatar>
-                                </button>
-                            </DropdownMenuTrigger>
-
-                            <DropdownMenuContent align='end' className='w-56'>
-                                <div className="flex items-center gap-2 p-2">
-                                    <Avatar className='h-8 w-8'>
-                                        <AvatarImage className='rounded-full' src={"https://avatars.githubusercontent.com/u/124599?v=4"} alt={user?.fullName} />
-                                        <AvatarFallback><img src={DefaultAvatar} alt="" /></AvatarFallback>
-                                    </Avatar>
-
-                                    <div className="flex flex-col">
-                                        <span className="text-sm font-bold">{user?.fullName}</span>
-                                        <span className="text-xs text-muted-foreground">{user?.email}</span>
-                                    </div>
-                                </div>
-
-                                <DropdownMenuSeparator />
-
-                                <DropdownMenuItem>
-                                    <UserCog className='h-4 w-4 mr-2'/>
-                                    Account Settings
-                                </DropdownMenuItem>
-
-                                <DropdownMenuItem onClick={logout} className='text-destructive focus:text-destructive'>
-                                    <LogOut className='h-4 w-4 mr-2 text-destructive' />
-                                    Sign out
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
                     </div>
                 )}
+
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <button className="flex ml-auto items-center gap-2 rounded-lg p-1 hover:bg-sidebar-accent transition-colors cursor-pointer">
+                            <Avatar className='h-8 w-8'>
+                                <AvatarImage className='rounded-full' src={"https://avatars.githubusercontent.com/u/124599?v=4"} alt={user?.fullName} />
+                                <AvatarFallback><img src={DefaultAvatar} alt="" /></AvatarFallback>
+                            </Avatar>
+                        </button>
+                    </DropdownMenuTrigger>
+
+                    <DropdownMenuContent align='end' className='w-56 ml-2'>
+                        <div className="flex items-center gap-2 p-2">
+                            <Avatar className='h-8 w-8'>
+                                <AvatarImage className='rounded-full' src={"https://avatars.githubusercontent.com/u/124599?v=4"} alt={user?.fullName} />
+                                <AvatarFallback><img src={DefaultAvatar} alt="" /></AvatarFallback>
+                            </Avatar>
+
+                            <div className="flex flex-col">
+                                <span className="text-sm font-bold">{user?.fullName}</span>
+                                <span className="text-xs text-muted-foreground">{user?.email}</span>
+                            </div>
+                        </div>
+
+                        <DropdownMenuSeparator />
+
+                        <DropdownMenuItem>
+                            <UserCog className='h-4 w-4 mr-2'/>
+                            Account Settings
+                        </DropdownMenuItem>
+
+                        <DropdownMenuItem onClick={logout} className='text-destructive focus:text-destructive'>
+                            <LogOut className='h-4 w-4 mr-2 text-destructive' />
+                            Sign out
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
 
 
@@ -117,7 +126,7 @@ export function AppSidebar({ activeSection = "dashboard", onSectionChange }: App
                         <SidebarMenu>
                             {
                                 menuItems.map((item) => (
-                                    <SidebarMenuItem key={item.id}>
+                                    <SidebarMenuItem className={item.admin && !isAdmin(user as User) ? "hidden" : "block" } key={item.id}>
                                         <SidebarMenuButton tooltip={item.title} className={`${activeSection === item.id ? "border-l-2 border-primary" : "border-l-2 border-transparent"}`} isActive={activeSection === item.id} onClick={() => onSectionChange?.(item.id)}>
                                             <item.icon className='h-4 w-4' />
                                             <span>{item.title}</span>
