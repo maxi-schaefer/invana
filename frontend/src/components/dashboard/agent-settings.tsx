@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { AlertTriangle, Check, CheckCircle, Clock, Copy, Eye, EyeOff, FileCog, Key, Monitor, RefreshCcw, RefreshCw, Save, Server, UploadCloud, XCircle } from "lucide-react";
-import { useState } from "react";
+import { AlertTriangle, Check, CheckCircle, Clock, Command, Copy, Download, Eye, EyeOff, FileCog, Key, Monitor, RefreshCw, Save, Server, Shield, UploadCloud, XCircle } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { Label } from "../ui/label";
@@ -12,12 +12,34 @@ import { Switch } from "../ui/switch";
 import { Select } from "@radix-ui/react-select";
 import { SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Textarea } from "../ui/textarea";
+import { Badge } from "../ui/badge";
+import { type AgentSettings } from "@/types/AgentSettings";
+import { agentSettingsApi } from "@/api/impl/agentSettings";
+import Loading from "../ui/loading";
 
 export default function AgentSettings() {
     const [showToken, setShowToken] = useState(false);
-    const [agentToken, setAgentToken] = useState("ivana_agent_token_neu1us76eh");
     const [isUpdating, setIsUpdating] = useState(false);
     const [copiedToken, setCopiedToken] = useState(false);
+    const [settings, setSettings] = useState<AgentSettings | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [collectionInterval, setCollectionInterval] = useState("5"); // default to 5 minutes
+
+    // Load Agent Settings
+    useEffect(() => {
+        const loadSettings = async() => {
+            try {
+                const res = await agentSettingsApi.getSettings();
+                setSettings(res.data as AgentSettings);
+                setCollectionInterval((res.data as AgentSettings).collectionInterval.toString());
+                setLoading(false);
+            } catch(error) {
+                toast.error("Failed to load agent settings");
+                console.error("Error loading settings: ", error);
+            }
+        }
+        loadSettings();
+    }, []);
 
     // Mockup data
     const agentStatus = [
@@ -38,6 +60,7 @@ export default function AgentSettings() {
         {
             server: "staging-db-01",
             status: "disconnected",
+            version: "1.2.3",
             lastSeen: "2 hours ago",
             ip: "10.0.2.10"
         },
@@ -50,9 +73,33 @@ export default function AgentSettings() {
         }
     ]
 
-    const handleSaveConfig = () => {
-        console.log("Saving agent configuration...")
-        // Implement saving config
+    const handleSaveConfig = async () => {
+        console.log("Saving agent configuration...");
+
+        const configData: AgentSettings = {
+            collectionInterval: parseInt(collectionInterval, 10),
+            serverPort: settings?.serverPort || 8080,
+            serverUrl: settings?.serverUrl || "",
+            customHeadersJson: settings?.customHeadersJson || "",
+            detailedLogging: settings?.detailedLogging || false,
+            retryAttempts: settings?.retryAttempts || 3,
+            timeout: settings?.timeout || 30,
+            tlsRequired: settings?.tlsRequired || true,
+            token: settings?.token || "",
+            id: 1
+        }
+
+        try {
+            const res = await agentSettingsApi.saveSettings(configData);
+            if(res.status !== 200) {
+                toast.error("Failed to save agent configuration");
+            }
+
+            toast.success("Agent configuration saved successfully!");
+        } catch(error) {
+            console.error(error);
+            toast.error("Failed to save agent configuration")
+        }
     };
 
     const handleSaveAndUpdate = async () => {
@@ -66,11 +113,11 @@ export default function AgentSettings() {
 
     const handleGenerateToken = () => {
         const newToken = `ivana_agent_token_${Math.random().toString(36).substring(2, 15)}`
-        setAgentToken(newToken);
+        setSettings({...settings!, token: newToken });
     }
 
     const handleCopyToken = () => {
-        navigator.clipboard.writeText(agentToken);
+        navigator.clipboard.writeText(settings?.token || "");
 
         toast.success("Copied agent token to clipboard!")
 
@@ -91,7 +138,7 @@ export default function AgentSettings() {
         }
   }
 
-  const getStatusVariant = (status: string) => {
+    const getStatusVariant = (status: string) => {
         switch (status) {
             case "connected":
                 return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
@@ -102,7 +149,9 @@ export default function AgentSettings() {
             default:
                 return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400"
         }
-  }
+    }
+
+    if(loading) return <Loading />
 
     return (
         <div className="space-y-6">
@@ -155,8 +204,8 @@ export default function AgentSettings() {
                                         <Input
                                             id="agent-token"
                                             type={showToken ? "text" : "password"}
-                                            value={agentToken}
-                                            onChange={(e) => setAgentToken(e.target.value)}
+                                            value={settings?.token || ""}
+                                            onChange={(e) => setSettings({ ...settings!, token: e.target.value })}
                                             className="pr-20"
                                         />
 
@@ -186,7 +235,7 @@ export default function AgentSettings() {
                                     <Label>Require TLS encryption</Label>
                                     <p className="text-sm text-muted-foreground">Force encrypted connections from agents</p>
                                 </div>
-                                <Switch defaultChecked />
+                                <Switch checked={settings?.tlsRequired} onCheckedChange={(e) => setSettings({ ...settings!, tlsRequired: e as boolean })} />
                             </div>
                         </CardContent>
                     </Card>
@@ -205,7 +254,7 @@ export default function AgentSettings() {
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="collection-interval">Collection Interval</Label>
-                                    <Select defaultValue="5">
+                                    <Select value={collectionInterval} onValueChange={setCollectionInterval}>
                                         <SelectTrigger>
                                             <SelectValue />
                                         </SelectTrigger>
@@ -219,15 +268,16 @@ export default function AgentSettings() {
                                     </Select>
                                 </div>
 
+
                                 <div className="space-y-2">
                                     <Label htmlFor="retry-attempts">Retry Attempts</Label>
-                                    <Input id="retry-attempts" type="number" defaultValue={3} />
+                                    <Input id="retry-attempts" type="number" defaultValue={settings?.retryAttempts || 3} onChange={(e) => setSettings({...settings!, retryAttempts: e.target.valueAsNumber })} />
                                 </div>
                             </div>
 
                             <div className="space-y-2">
                                     <Label htmlFor="timeout">Request Timeout (seconds)</Label>
-                                    <Input id="timeout" type="number" defaultValue={30} className="max-w-xs" />
+                                    <Input id="timeout" type="number" defaultValue={settings?.timeout || 3} onChange={(e) => setSettings({...settings!, timeout: e.target.valueAsNumber })} className="max-w-xs" />
                             </div>
 
                             <div className="flex items-center justify-between">
@@ -235,7 +285,7 @@ export default function AgentSettings() {
                                     <Label>Enable detailed logging</Label>
                                     <p className="text-sm text-muted-foreground">Agents will send detailed execution logs</p>
                                 </div>
-                                <Switch />
+                                <Switch checked={settings?.detailedLogging} onCheckedChange={(e) => setSettings({ ...settings!, detailedLogging: e })} />
                             </div>
                         </CardContent>
                     </Card>
@@ -253,12 +303,12 @@ export default function AgentSettings() {
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
                                 <Label htmlFor="server-url">Ivana Server URL</Label>
-                                <Input id="server-url" defaultValue={"https://ivana.company.com"} />
+                                <Input id="server-url" defaultValue={settings?.serverUrl} onChange={(e) => setSettings({ ...settings!, serverUrl: e.target.value })} />
                             </div>
                             
                             <div className="space-y-2">
                                 <Label htmlFor="server-port">Ivana Server Port</Label>
-                                <Input id="server-port" type="number" defaultValue={8080} className="max-w-xs" />
+                                <Input id="server-port" type="number" defaultValue={settings?.serverPort} onChange={(e) => setSettings({ ...settings!, serverPort: e.target.valueAsNumber })} className="max-w-xs" />
                             </div>
 
                             <div className="space-y-2">
@@ -267,7 +317,146 @@ export default function AgentSettings() {
                                     id="custom-headers"
                                     placeholder='{"X-Custom-Header": "value"}'
                                     className="min-h-[80px] font-mono text-sm"
+                                    value={settings?.customHeadersJson || ""}
+                                    onChange={(e) => setSettings({ ...settings!, customHeadersJson: e.target.value })}
                                 />
+                            </div>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                {/* Deployment Tab */}
+                <TabsContent value="deployment" className="space-y-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <Download className="h-5 w-5" />
+                                Agent Deployment
+                            </CardTitle>
+                            <CardDescription>Download and deploy Ivana agents to your servers</CardDescription>
+                        </CardHeader>
+
+                        <CardContent className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                                {/* Universal Download */}
+                                <Card className="border-2">
+                                    <CardHeader>
+                                        <CardTitle className="text-lg">Universal Agent</CardTitle>
+                                        <CardDescription>For Linux, Windows and everything which runs python</CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="space-y-3">
+                                        <Button className="w-full" variant={"outline"}>
+                                            <Download className="h-4 w-4 mr-2" />
+                                            Download .py
+                                        </Button>
+                                    </CardContent>
+                                </Card>
+
+                                {/* Containerized download */}
+                                <Card className="border-2">
+                                    <CardHeader className="pb-3">
+                                        <CardTitle className="text-lg">Docker Agent</CardTitle>
+                                        <CardDescription>Containerized deployment</CardDescription>
+                                    </CardHeader>
+
+                                    <CardContent className="space-y-3">
+                                        <Button className="w-full" variant={"outline"}>
+                                            <Download className="h-4 w-4 mr-2" />
+                                            Docker Compose
+                                        </Button>
+                                        <Button className="w-full" variant={"outline"}>
+                                            <Download className="h-4 w-4 mr-2" />
+                                            Kubernetes YAML
+                                        </Button>
+                                    </CardContent>
+                                </Card>
+                            </div>
+
+                            <Separator />
+
+                            <div className="space-y-3">
+                                <div className="flex items-center text-lg font-medium">
+                                    <Command className="h-5 w-5 mr-2 text-muted-foreground" />
+                                    Installation Commands
+                                </div>
+                                <div className="space-y-3">
+                                    <div>
+                                        <Label className="text-sm font-medium">Linux</Label>
+                                        <div className="bg-muted p-3 rounded-md mt-1">
+                                            <code className="text-sm">
+                                                curl -sSL https://ivana.company.com/install.sh | sudo bash -s -- --token {settings?.token}
+                                            </code>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                {/* Agent Status Tab */}
+                <TabsContent value="status" className="space-y-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <Shield className="h-5 w-5" />
+                                Agent Status Overview
+                            </CardTitle>
+                            <CardDescription>Monitor the status of all deployed agents</CardDescription>
+                        </CardHeader>
+
+                        <CardContent>
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                                {/* Connected Agents */}
+                                <div className="text-center p-4 border rounded-lg">
+                                    <div className="text-2xl font-bold text-green-600">2</div>
+                                    <div className="text-sm text-muted-foreground">Connected</div>
+                                </div>
+
+                                {/* Disconnected Agents */}
+                                <div className="text-center p-4 border rounded-lg">
+                                    <div className="text-2xl font-bold text-red-600">1</div>
+                                    <div className="text-sm text-muted-foreground">Disconnected</div>
+                                </div>
+                                
+                                {/* Outdated Agents */}
+                                <div className="text-center p-4 border rounded-lg">
+                                    <div className="text-2xl font-bold text-yellow-600">1</div>
+                                    <div className="text-sm text-muted-foreground">Outdated</div>
+                                </div>
+                                
+                                {/* Total Agents */}
+                                <div className="text-center p-4 border rounded-lg">
+                                    <div className="text-2xl font-bold text-blue-500">4</div>
+                                    <div className="text-sm text-muted-foreground">Total</div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-3">
+                                {
+                                    agentStatus.map((agent, index) => (
+                                        <div key={index} className="flex border-l-4 border-l-primary items-center justify-between p-4 border rounded-lg">
+                                            <div className="flex items-center gap-3">
+                                                {getStatusIcon(agent.status)}
+                                                <div>
+                                                    <p className="font-medium">{agent.server}</p>
+                                                    <p className="text-sm text-muted-foreground">{agent.ip}</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex items-center gap-4">
+                                                <div className="text-right">
+                                                    <p className="text-sm font-medium">v{agent.version}</p>
+                                                    <p className="text-xs text-muted-foreground">{agent.lastSeen}</p>
+                                                </div>
+
+                                                <Badge className={getStatusVariant(agent.status)}>{agent.status}</Badge>
+                                            </div>
+                                        </div>
+
+                                    ))
+                                }
                             </div>
                         </CardContent>
                     </Card>
