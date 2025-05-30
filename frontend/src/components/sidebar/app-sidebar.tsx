@@ -81,7 +81,7 @@ export function AppSidebar({ activeSection = "dashboard", onSectionChange }: App
                     <DropdownMenuTrigger asChild>
                         <button className="flex ml-auto items-center gap-2 rounded-lg p-1 hover:bg-sidebar-accent transition-colors cursor-pointer">
                             <Avatar className='h-8 w-8'>
-                                <AvatarImage className='rounded-full' src={"https://avatars.githubusercontent.com/u/124599?v=4"} alt={user?.fullName} />
+                                <AvatarImage className='rounded-full' src={"https://avatars.githubusercontent.com/u/95922236?v=4"} alt={user?.fullName} />
                                 <AvatarFallback><img src={DefaultAvatar} alt="" /></AvatarFallback>
                             </Avatar>
                         </button>
@@ -90,7 +90,7 @@ export function AppSidebar({ activeSection = "dashboard", onSectionChange }: App
                     <DropdownMenuContent align='end' className='w-56 ml-2'>
                         <div className="flex items-center gap-2 p-2">
                             <Avatar className='h-8 w-8'>
-                                <AvatarImage className='rounded-full' src={"https://avatars.githubusercontent.com/u/124599?v=4"} alt={user?.fullName} />
+                                <AvatarImage className='rounded-full' src={"https://avatars.githubusercontent.com/u/95922236?v=4"} alt={user?.fullName} />
                                 <AvatarFallback><img src={DefaultAvatar} alt="" /></AvatarFallback>
                             </Avatar>
 

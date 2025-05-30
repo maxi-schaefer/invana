@@ -62,7 +62,7 @@ export default function Login() {
             <div className="relative flex flex-col h-screen items-center justify-center">
                 {/* Company logo and name */}
                 <span className="flex items-center gap-2 self-center font-medium mb-4">
-                    <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
+                    <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-lg shadow-primary/20">
                         <Database className="size-4" />
                     </div>
                     Invana

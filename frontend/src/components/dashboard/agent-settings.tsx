@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { AlertTriangle, Check, CheckCircle, Clock, Copy, Eye, EyeOff, FileCog, Key, Monitor, RefreshCcw, RefreshCw, Save, Server, UploadCloud, XCircle } from "lucide-react";
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";

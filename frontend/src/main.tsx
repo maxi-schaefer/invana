@@ -8,7 +8,7 @@ import { Toaster } from './components/ui/sonner.tsx'
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <AuthProvider>
-      <Toaster />
+      <Toaster richColors position='bottom-center' />
       <App />
     </AuthProvider>
   </StrictMode>,
