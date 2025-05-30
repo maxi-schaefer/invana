@@ -5,9 +5,9 @@ import { ModeToggle } from '../ui/theme-toggle';
 import DashboardOverview from './dashboard-overview';
 import ScriptLibrary from './script-library';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '../ui/breadcrumb';
-import ServerInventory from './server-inventory';
 import VersionHistory from './version-history';
 import AgentSettings from './agent-settings';
+import AgentInventory from './agent-inventory';
 
 export default function DashboardContent() {
     const [activeSection, setActiveSection] = React.useState<string>('dashboard');
@@ -18,8 +18,8 @@ export default function DashboardContent() {
                 return <DashboardOverview />;
             case "scripts":
                 return <ScriptLibrary />
-            case 'servers':
-                return <ServerInventory />;
+            case 'agents inventory':
+                return <AgentInventory />;
             case 'history':
                 return <VersionHistory />;
             case 'agents':

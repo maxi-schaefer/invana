@@ -17,9 +17,9 @@ const menuItems = [
       id: "dashboard",
     },
     {
-      title: "Server Inventory",
+      title: "Agent Inventory",
       icon: Server,
-      id: "servers",
+      id: "agents inventory",
     },
     {
       title: "Services",
@@ -144,7 +144,7 @@ export function AppSidebar({ activeSection = "dashboard", onSectionChange }: App
                     <SidebarGroupContent>
                         <SidebarMenu>
                             <SidebarMenuItem>
-                                <SidebarMenuButton onClick={() => onSectionChange?.('servers')}>
+                                <SidebarMenuButton onClick={() => onSectionChange?.('agents')}>
                                     <Server className='h-4 w-4' />
                                     <span>Add Server</span>
                                 </SidebarMenuButton>

@@ -55,10 +55,34 @@ export function getBadgeStyle(status: string): string {
       return "bg-green-200 text-green-800 dark:bg-green-900/20 dark:text-green-400"
 
     // Server status badge
-    case "online":
+    case "connected":
       return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
 
     default:
       return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400"
   }
+}
+
+export function timeAgo(timestamp: string) {
+  const now: any = new Date();
+  const date: any = new Date(timestamp);
+  const diffInSeconds = Math.floor((now - date) / 1000);
+
+  const units = [
+      { label: "year", seconds: 31536000 },
+      { label: "month", seconds: 2592000 },
+      { label: "day", seconds: 86400 },
+      { label: "hour", seconds: 3600 },
+      { label: "minute", seconds: 60 },
+      { label: "second", seconds: 1 },
+  ];
+
+  for (const unit of units) {
+      const amount = Math.floor(diffInSeconds / unit.seconds);
+      if (amount >= 1) {
+          return `${amount} ${unit.label}${amount > 1 ? "s" : ""} ago`;
+      }
+  }
+
+  return "just now";
 }

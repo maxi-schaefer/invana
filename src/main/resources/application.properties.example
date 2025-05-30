@@ -1,0 +1,39 @@
+server.port=8080
+spring.application.name=invana
+
+# ===============================
+# Invana Default User
+# ===============================
+invana.defaultAdminEmail=admin@example.com
+invana.defaultAdminPassword=password
+
+# ===============================
+# Custom Agent Defaults (optional preset values)
+# ===============================
+ivana.default.agent.token=ivana_agent_token_default
+ivana.default.agent.tls=true
+ivana.default.agent.interval=5
+ivana.default.agent.retries=3
+ivana.default.agent.timeout=30
+ivana.default.agent.logging=false
+ivana.default.server.url=https://ivana.company.com
+ivana.default.server.port=8080
+
+# ===============================
+# DATABASE
+# ===============================
+spring.datasource.url=jdbc:mysql://localhost:3307/invana?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
+spring.datasource.username=root
+spring.datasource.password=secret
+
+# ===============================
+## Hibernate properties
+# ===============================
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.open-in-view=false
+
+# ===============================
+## JWT properties
+# ===============================
+security.jwt.secret-key=645c2b17e35041ebd6f2e0b32494957bb255c8482349f449d2230609a36c184d
+security.jwt.expiration-time=3600000

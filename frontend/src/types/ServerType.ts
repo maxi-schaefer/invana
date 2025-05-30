@@ -1,5 +1,5 @@
 export default interface ServerType {
-    id: number; // TODO: Change to string if using UUIDs
+    id: string;
     name: string;
     hostname: string;
     ip: string;
@@ -7,5 +7,5 @@ export default interface ServerType {
     os: string;
     status: "online" | "offline" | "maintenance";
     services: number;
-    lastCheck: string;
+    lastSeen: string;
 }
