@@ -75,4 +75,9 @@ public class AgentSettingsService {
                 });
     }
 
+    public boolean isValidToken(String token) {
+        AgentSettings settings = getSettings();
+        return settings != null && token.equalsIgnoreCase(settings.getToken());
+    }
+
 }
