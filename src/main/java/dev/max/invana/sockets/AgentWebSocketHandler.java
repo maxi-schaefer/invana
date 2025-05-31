@@ -7,6 +7,8 @@ import dev.max.invana.entities.Agent;
 import dev.max.invana.enums.AgentStatus;
 import dev.max.invana.repositories.AgentRepository;
 import dev.max.invana.services.AgentSettingsService;
+import dev.max.invana.services.FrontendNotificationService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
@@ -17,13 +19,12 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Component
+@AllArgsConstructor
 public class AgentWebSocketHandler extends TextWebSocketHandler {
 
-    @Autowired
     private AgentRepository agentRepository;
-
-    @Autowired
     private AgentSettingsService agentSettingsService;
+    private FrontendNotificationService frontendNotificationService;
 
     private final Set<WebSocketSession> sessions = Collections.synchronizedSet(new HashSet<>());
     private final Map<String, String> sessionToAgentId = new HashMap<>();
@@ -40,6 +41,7 @@ public class AgentWebSocketHandler extends TextWebSocketHandler {
 
         if(agent.isPresent()) {
             agent.get().setStatus(AgentStatus.DISCONNECTED);
+            frontendNotificationService.sendAgentUpdate(agent.get());
             agentRepository.save(agent.get());
         }
 
@@ -114,7 +116,9 @@ public class AgentWebSocketHandler extends TextWebSocketHandler {
         agent.setLastSeen(LocalDateTime.now());
 
         Agent saved = agentRepository.save(agent);
+        frontendNotificationService.sendAgentUpdate(saved);
         sessionToAgentId.put(session.getId(), saved.getId());
+
 
         session.sendMessage(new TextMessage("REGISTERED: " + saved.getId()));
     }
@@ -132,6 +136,8 @@ public class AgentWebSocketHandler extends TextWebSocketHandler {
             agentOpt.ifPresent(agent -> {
                 agent.setStatus(AgentStatus.UNAUTHENTICATED);
                 agentRepository.save(agent);
+
+                frontendNotificationService.sendAgentUpdate(agent);
             });
 
             session.sendMessage(new TextMessage("AUTH_DENIED"));
@@ -153,6 +159,7 @@ public class AgentWebSocketHandler extends TextWebSocketHandler {
                 session.sendMessage(new TextMessage("HEARTBEAT_DENY"));
             }
 
+            frontendNotificationService.sendAgentUpdate(agent);
         } else {
             session.sendMessage(new TextMessage("AUTH_DENIED"));
         }

@@ -30,12 +30,10 @@ export const SocketProvider: React.FC<{ token: string | null; children: React.Re
       onConnect: () => {
         console.log("✅ WebSocket connected");
         setConnected(true);
-        toast.success("WebSocket connected");
       },
       onDisconnect: () => {
         console.log("🔌 WebSocket disconnected");
         setConnected(false);
-        toast.warning("WebSocket disconnected");
       },
       onStompError: (frame) => {
         console.error("STOMP error", frame);

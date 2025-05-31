@@ -8,24 +8,26 @@ import { cn, getBadgeStyle, timeAgo } from "@/lib/utils";
 import { Badge } from "../ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { agentApi } from "@/api/impl/agentApi";
-import Loading from "../ui/loading";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { toast } from "sonner";
+import { useSocket } from "@/context/SocketProvider";
+import { isAdmin } from "@/utils/auth";
+import { useAuth } from "@/hooks/use-auth";
+import type { User } from "@/types/User";
 
 export default function AgentInventory() {
-    const [loading, setLoading] = useState(true);
     const [servers, setServers] = useState<ServerType[]>([]);
     const [pendingServers, setPendingServers] = useState<ServerType[]>([]);
     const [dialogOpen, setDialogOpen] = useState(false);
-    const [, forceUpdate] = useState(0);
+    const { client } = useSocket();
+    const { user } = useAuth();
 
     const fetchServers = async () => {
         try {
             const res = await agentApi.getAgents();
 
-            setLoading(false);
             setServers(res.data as ServerType[]);
         } catch(error) {
             console.error(error);
@@ -44,17 +46,50 @@ export default function AgentInventory() {
     }
 
     useEffect(() => {
-        fetchPendingServers();
+        
         fetchServers();
+        fetchPendingServers();
 
-        const interval = setInterval(() => {
-            fetchPendingServers();
-            fetchServers();
-            forceUpdate(x => x + 1);
-        }, 30000);
-    
-        return () => clearInterval(interval);
-    }, []);
+        if(client !== null) {
+            const subscription = client.subscribe("/topic/agent-updates", (message) => {
+                const updatedAgent: ServerType = JSON.parse(message.body);
+
+                setServers((prevServers: ServerType[]) => {
+                    const existingIndex = prevServers.findIndex(s => s.id === updatedAgent.id);
+
+                    if(existingIndex !== -1) {
+                        const updated = [...prevServers];
+                        updated[existingIndex] = updatedAgent;
+                        return updated;
+                    }
+
+                    setPendingServers(prevPending => {
+                        const pendingIndex = prevPending.findIndex(s => s.id === updatedAgent.id);
+                        if(pendingIndex !== -1) {
+                            const updatedPending = [...prevPending];
+                            updatedPending[pendingIndex] = updatedAgent;
+                            return updatedPending;
+                        }
+
+                        if(updatedAgent.status === "PENDING") {
+                            return [...prevPending, updatedAgent];
+                        }
+
+                        return prevPending;
+                    });
+
+                    if(updatedAgent.status !== "PENDING") {
+                        return [...prevServers, updatedAgent];
+                    }
+                    return prevServers;
+                });
+            });
+
+            return () => {
+                subscription.unsubscribe();
+            }
+        }
+    }, [client]);
 
 
     const updatePendingServer = (id: string, key: string, value: string) => {
@@ -74,6 +109,7 @@ export default function AgentInventory() {
             }
 
             fetchPendingServers();
+            fetchServers();
         } catch(error) {
             toast.error("An error occurred whilste denying the agent!");
             console.error(error);
@@ -96,8 +132,6 @@ export default function AgentInventory() {
         }
     }
 
-    if(loading) return <Loading />
-
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
@@ -106,97 +140,101 @@ export default function AgentInventory() {
                     <p className="text-muted-foreground">Manage servers in your infrastructure</p>
                 </div>
 
-                <Dialog onOpenChange={() => {fetchPendingServers(); setDialogOpen(!dialogOpen)}} open={dialogOpen}>
-                    <DialogTrigger asChild>
-                        <Button>
-                            <Plus className="h-4 w-4 mr-2" />
-                            Add Server
-
-                            {
-                                pendingServers.length > 0 && (
-                                    <Badge variant={"secondary"}>{pendingServers.length}</Badge>
-                                )
-                            }
-                        </Button>
-                    </DialogTrigger>
-
-                    <DialogContent className="!max-w-3xl" >
-                        <DialogTitle className="border-b pb-2">Pending Servers</DialogTitle>
-                        <div>
-                            {
-                                pendingServers.length > 0 ? pendingServers.map((server) => (
-                                    <div
-                                        key={server.id}
-                                        className="border-l-4 border-l-primary rounded-xl border border-border bg-card p-4 shadow-sm mb-2"
-                                    >
-                                        <div>
-                                            <p className="text-sm text-muted-foreground">Detected Hostname</p>
-                                            <p className="text-base font-semibold text-foreground">{server.hostname}</p>
-                                        </div>
-                                    
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                            <div className="space-y-1">
-                                                <Label className="text-sm font-medium">Rename Server</Label>
-                                                <Input
-                                                type="text"
-                                                defaultValue={server.name}
-                                                onChange={(e) =>
-                                                    updatePendingServer(server.id, "name", e.target.value)
-                                                }
-                                                />
-                                            </div>
-                                    
-                                            <div className="space-y-1">
-                                                <Label className="text-sm font-medium">Environment</Label>
-                                                <Select
-                                                    value={server.environment}
-                                                    onValueChange={(e) =>
-                                                        updatePendingServer(server.id, "environment", e)
-                                                    }
+                {
+                    isAdmin(user as User) && (
+                        <Dialog onOpenChange={() => {setDialogOpen(!dialogOpen)}} open={dialogOpen}>
+                            <DialogTrigger asChild>
+                                <Button>
+                                    <Plus className="h-4 w-4 mr-2" />
+                                    Add Agent
+        
+                                    {
+                                        pendingServers.length > 0 && (
+                                            <Badge variant={"secondary"}>{pendingServers.length}</Badge>
+                                        )
+                                    }
+                                </Button>
+                            </DialogTrigger>
+        
+                            <DialogContent className="!max-w-3xl" >
+                                <DialogTitle className="border-b pb-2">Pending Servers</DialogTitle>
+                                <div>
+                                    {
+                                        pendingServers.length > 0 ? pendingServers.map((server) => (
+                                            <div
+                                                key={server.id}
+                                                className="border-l-4 border-l-primary rounded-xl border border-border bg-card p-4 shadow-sm mb-2"
+                                            >
+                                                <div>
+                                                    <p className="text-sm text-muted-foreground">Detected Hostname</p>
+                                                    <p className="text-base font-semibold text-foreground">{server.hostname}</p>
+                                                </div>
+                                            
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                    <div className="space-y-1">
+                                                        <Label className="text-sm font-medium">Rename Server</Label>
+                                                        <Input
+                                                        type="text"
+                                                        defaultValue={server.name}
+                                                        onChange={(e) =>
+                                                            updatePendingServer(server.id, "name", e.target.value)
+                                                        }
+                                                        />
+                                                    </div>
+                                            
+                                                    <div className="space-y-1">
+                                                        <Label className="text-sm font-medium">Environment</Label>
+                                                        <Select
+                                                            value={server.environment}
+                                                            onValueChange={(e) =>
+                                                                updatePendingServer(server.id, "environment", e)
+                                                            }
+                                                        >
+                                                            <SelectTrigger>
+                                                                <SelectValue placeholder="Select environment" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="production">
+                                                                    <Badge className={getBadgeStyle("Production")}>Production</Badge>
+                                                                </SelectItem>
+                                                                <SelectItem value="staging">
+                                                                    <Badge className={getBadgeStyle("Staging")}>Staging</Badge>
+                                                                </SelectItem>
+                                                                <SelectItem value="development">
+                                                                    <Badge className={getBadgeStyle("Development")}>Development</Badge>
+                                                                </SelectItem>
+                                                                <SelectItem value="testing">
+                                                                    <Badge className={getBadgeStyle("Testing")}>Testing</Badge>
+                                                                </SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                </div>
+                                            
+                                                <div className="flex justify-end gap-2 pt-2">
+                                                <Button variant="destructive" onClick={() => denyAgent(server.id)}>
+                                                    Deny
+                                                </Button>
+                                                <Button
+                                                    className="bg-green-500 hover:bg-green-400"
+                                                    onClick={() => acceptAgent(server.id, server.name, server.environment)}
                                                 >
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Select environment" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="production">
-                                                            <Badge className={getBadgeStyle("Production")}>Production</Badge>
-                                                        </SelectItem>
-                                                        <SelectItem value="staging">
-                                                            <Badge className={getBadgeStyle("Staging")}>Staging</Badge>
-                                                        </SelectItem>
-                                                        <SelectItem value="development">
-                                                            <Badge className={getBadgeStyle("Development")}>Development</Badge>
-                                                        </SelectItem>
-                                                        <SelectItem value="testing">
-                                                            <Badge className={getBadgeStyle("Testing")}>Testing</Badge>
-                                                        </SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
-                                        </div>
-                                    
-                                        <div className="flex justify-end gap-2 pt-2">
-                                        <Button variant="destructive" onClick={() => denyAgent(server.id)}>
-                                            Deny
-                                        </Button>
-                                        <Button
-                                            className="bg-green-500 hover:bg-green-400"
-                                            onClick={() => acceptAgent(server.id, server.name, server.environment)}
-                                        >
-                                            Accept
-                                        </Button>
-                                        </div>
-                                    </div>                                  
-                                )) : (
-                                    <p className="text-muted-foreground">🤷‍♂️ There are no pending Servers</p>
-                                )
-                            }
-                        </div>
-                    </DialogContent>
-                </Dialog>
+                                                    Accept
+                                                </Button>
+                                                </div>
+                                            </div>                                  
+                                        )) : (
+                                            <p className="text-muted-foreground">🤷‍♂️ There are no pending Servers</p>
+                                        )
+                                    }
+                                </div>
+                            </DialogContent>
+                        </Dialog>
+                    )
+                }
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {
                     servers.length != 0 ? servers.map(server => (
                         <Card key={server.id} className="border-l-4 border-l-primary">
@@ -237,7 +275,7 @@ export default function AgentInventory() {
                                         <span className="text-sm">{server.services} services</span>
                                     </div>
 
-                                    <div className="text-sm text-muted-foreground">Last check: <Badge variant={"outline"}>{timeAgo(server.lastSeen)}</Badge></div>
+                                    <div className="text-sm text-muted-foreground">Last status update: <Badge variant={"outline"}>{timeAgo(server.lastSeen)}</Badge></div>
                                 </div>
 
                                 <div className="flex justify-end">

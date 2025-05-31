@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Check, Clock, Command, Copy, Download, Eye, EyeOff, FileCog, Key, Monitor, RefreshCw, Save, Server, UploadCloud } from "lucide-react";
+import { Check, Clock, Command, Copy, Download, Eye, EyeOff, FileCog, Key, RefreshCw, Server, UploadCloud } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
@@ -40,10 +40,6 @@ export default function AgentSettings() {
         }
         loadSettings();
     }, []);
-
-    const handleSaveConfig = async () => {
-        
-    };
 
     const handleSaveAndUpdate = async () => {
         setIsUpdating(true);

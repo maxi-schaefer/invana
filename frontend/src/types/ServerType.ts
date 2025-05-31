@@ -5,7 +5,7 @@ export default interface ServerType {
     ip: string;
     environment: string;
     os: string;
-    status: "online" | "offline" | "maintenance";
+    status: "connected" | "disconnected" | "unauthorized" | "PENDING";
     services: number;
     lastSeen: string;
 }

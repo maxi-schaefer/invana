@@ -119,7 +119,7 @@ export default function Login() {
                                 <Button variant={"link"} className='px-0 font-normal text-sm'>Forgot password?</Button>
                             </div>
 
-                            <Button type='submit'className='w-full h-11'>
+                            <Button type='submit'className='w-full h-11' disabled={loading}>
                                 {iLoading ? (
                                     <div className="animate-spin rounded-full border-2 border-gray-400 border-t-gray-900 h-5 w-5"/>
                                 ) : ("Sign in")}
