@@ -1,15 +1,14 @@
 package dev.max.invana.configs;
 
-import dev.max.invana.components.AgentWebSocketHandler;
+import dev.max.invana.sockets.AgentWebSocketHandler;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.*;
 
 @Configuration
 @EnableWebSocket
 @AllArgsConstructor
-public class WebSocketConfig implements WebSocketConfigurer {
+public class AgentWebSocketConfig implements WebSocketConfigurer {
 
     private final AgentWebSocketHandler handler;
 

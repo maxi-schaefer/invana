@@ -1,4 +1,4 @@
-package dev.max.invana.components;
+package dev.max.invana.sockets;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.max.invana.dtos.AgentRegistrationDto;
@@ -13,7 +13,6 @@ import org.springframework.web.socket.*;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.time.LocalDateTime;
 import java.util.*;
 

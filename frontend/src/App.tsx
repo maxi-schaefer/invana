@@ -3,6 +3,8 @@ import { ThemeProvider } from './components/theme-provider'
 import Dashboard from './pages/Dashboard'
 import PrivateRoute from './components/private-route'
 import Login from './pages/Login'
+import { SocketProvider } from './context/SocketProvider'
+import { getToken } from './utils/auth'
 
 function App() {
   return (
@@ -12,7 +14,9 @@ function App() {
           <Route path='/' element={<Login />} />
           <Route path='/dashboard' element={
             <PrivateRoute>
-              <Dashboard />
+              <SocketProvider token={getToken()}>
+                <Dashboard />
+              </SocketProvider>
             </PrivateRoute>
           } />
         </Routes>

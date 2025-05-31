@@ -11,6 +11,9 @@ export default defineConfig({
       "/api": "http://localhost:8080",
     }
   },
+  define: {
+    global: 'globalThis'
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

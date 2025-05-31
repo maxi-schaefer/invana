@@ -1,15 +1,13 @@
 package dev.max.invana.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.max.invana.components.AgentWebSocketHandler;
+import dev.max.invana.sockets.AgentWebSocketHandler;
 import dev.max.invana.dtos.AgentAcceptDto;
-import dev.max.invana.dtos.AgentRegistrationDto;
 import dev.max.invana.entities.Agent;
 import dev.max.invana.enums.AgentStatus;
 import dev.max.invana.repositories.AgentRepository;
 import dev.max.invana.services.AgentSettingsService;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
