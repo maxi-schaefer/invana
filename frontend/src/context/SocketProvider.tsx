@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useRef, useState } from "r
 import SockJS from "sockjs-client";
 import { toast } from "sonner";
 import { Client, type Message } from "@stomp/stompjs";
+import type ServerType from "@/types/ServerType";
 
 interface SocketContextType {
   client: Client | null;
@@ -50,14 +51,14 @@ export const SocketProvider: React.FC<{ token: string | null; children: React.Re
     };
   }, [token]);
 
-    const subscribe = (destination: string, callback: (msg: Message) => void) => {
-        stompClientRef.current?.subscribe(destination, callback);
-    };
+  const subscribe = (destination: string, callback: (msg: Message) => void) => {
+      stompClientRef.current?.subscribe(destination, callback);
+  };
 
-    const send = (destination: string, body?: string | object) => {
-        const payload = typeof body === 'object' ? JSON.stringify(body) : body || '';
-        stompClientRef.current?.publish({ destination, body: payload });
-    };
+  const send = (destination: string, body?: string | object) => {
+      const payload = typeof body === 'object' ? JSON.stringify(body) : body || '';
+      stompClientRef.current?.publish({ destination, body: payload });
+  };
 
   return (
     <SocketContext.Provider value={{ client: stompClientRef.current, connected, subscribe, send }}>

@@ -41,8 +41,8 @@ public class AgentWebSocketHandler extends TextWebSocketHandler {
 
         if(agent.isPresent()) {
             agent.get().setStatus(AgentStatus.DISCONNECTED);
-            frontendNotificationService.sendAgentUpdate(agent.get());
-            agentRepository.save(agent.get());
+            Agent saved = agentRepository.save(agent.get());
+            frontendNotificationService.sendAgentUpdate(saved);
         }
 
         sessionToAgentId.remove(session.getId());
@@ -150,10 +150,16 @@ public class AgentWebSocketHandler extends TextWebSocketHandler {
             Agent agent = agentOpt.get();
 
             if(agent.getStatus() != AgentStatus.PENDING) {
+
+                if(!sessionToAgentId.containsKey(session.getId())) {
+                    frontendNotificationService.sendAgentReconnected(agent);
+                }
+
                 sessionToAgentId.putIfAbsent(session.getId(), agentId);
                 agent.setLastSeen(LocalDateTime.now());
                 agent.setStatus(AgentStatus.CONNECTED);
                 agentRepository.save(agent);
+
                 session.sendMessage(new TextMessage("HEARTBEAT_ACK"));
             } else {
                 session.sendMessage(new TextMessage("HEARTBEAT_DENY"));

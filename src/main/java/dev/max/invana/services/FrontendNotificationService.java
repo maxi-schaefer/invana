@@ -15,4 +15,8 @@ public class FrontendNotificationService {
         messagingTemplate.convertAndSend("/topic/agent-updates", agent);
     }
 
+    public void sendAgentReconnected(Agent agent) {
+        messagingTemplate.convertAndSend("/topic/agent-reconnected", agent);
+    }
+
 }
