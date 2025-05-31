@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { AlertTriangle, Check, CheckCircle, Clock, Command, Copy, Download, Eye, EyeOff, FileCog, Key, Monitor, RefreshCw, Save, Server, Shield, UploadCloud, XCircle } from "lucide-react";
+import { Check, Clock, Command, Copy, Download, Eye, EyeOff, FileCog, Key, Monitor, RefreshCw, Save, Server, UploadCloud } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
@@ -12,10 +12,10 @@ import { Switch } from "../ui/switch";
 import { Select } from "@radix-ui/react-select";
 import { SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Textarea } from "../ui/textarea";
-import { Badge } from "../ui/badge";
 import { type AgentSettings } from "@/types/AgentSettings";
 import { agentSettingsApi } from "@/api/impl/agentSettings";
 import Loading from "../ui/loading";
+import ServerUrlInput from "../ui/server-url-input";
 
 export default function AgentSettings() {
     const [showToken, setShowToken] = useState(false);
@@ -41,39 +41,12 @@ export default function AgentSettings() {
         loadSettings();
     }, []);
 
-    // Mockup data
-    const agentStatus = [
-        {
-            server: "prod-web-01",
-            status: "connected",
-            version: "1.2.3",
-            lastSeen: "2 minutes ago",
-            ip: "10.0.1.10"
-        },
-        {
-            server: "prod-api-02",
-            status: "connected",
-            version: "1.2.3",
-            lastSeen: "1 minute ago",
-            ip: "10.0.1.20"
-        },
-        {
-            server: "staging-db-01",
-            status: "disconnected",
-            version: "1.2.3",
-            lastSeen: "2 hours ago",
-            ip: "10.0.2.10"
-        },
-        {
-            server: "dev-app-01",
-            status: "outdated",
-            version: "1.1.5",
-            lastSeen: "5 minutes ago",
-            ip: "10.0.3.10"
-        }
-    ]
-
     const handleSaveConfig = async () => {
+        
+    };
+
+    const handleSaveAndUpdate = async () => {
+        setIsUpdating(true);
         console.log("Saving agent configuration...");
 
         const configData: AgentSettings = {
@@ -94,21 +67,13 @@ export default function AgentSettings() {
             if(res.status !== 200) {
                 toast.error("Failed to save agent configuration");
             }
-
             toast.success((res.data as any).message);
         } catch(error) {
             console.error(error);
             toast.error("Failed to save agent configuration")
         }
-    };
 
-    const handleSaveAndUpdate = async () => {
-        setIsUpdating(true);
-        console.log("Saving configuration and updating all servers...");
-        // Implementation for saving and updating all servers
-        setTimeout(() => {
-            setIsUpdating(false);
-        }, 3000);
+        setIsUpdating(false);
     };
 
     const handleGenerateToken = () => {
@@ -125,32 +90,6 @@ export default function AgentSettings() {
         setTimeout(() => setCopiedToken(false), 3000);
     }
 
-    const getStatusIcon = (status: string) => {
-        switch (status) {
-            case "connected":
-                return <CheckCircle className="h-4 w-4 text-green-500" />
-            case "disconnected":
-                return <XCircle className="h-4 w-4 text-red-500" />
-            case "outdated":
-                return <AlertTriangle className="h-4 w-4 text-yellow-500" />
-            default:
-                return <XCircle className="h-4 w-4 text-gray-500" />
-        }
-  }
-
-    const getStatusVariant = (status: string) => {
-        switch (status) {
-            case "connected":
-                return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
-            case "disconnected":
-                return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400"
-            case "outdated":
-                return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400"
-            default:
-                return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400"
-        }
-    }
-
     if(loading) return <Loading />
 
     return (
@@ -161,20 +100,15 @@ export default function AgentSettings() {
             </div>
 
             <Tabs defaultValue="configuration" className="w-full">
-                <TabsList className="grid w-full grid-cols-3">
+                <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="configuration"><FileCog className="h-4 w-4" /> Configuration</TabsTrigger>
                     <TabsTrigger value="deployment"><UploadCloud className="h-4 w-4" /> Deployment</TabsTrigger>
-                    <TabsTrigger value="status"><Monitor className="h-4 w-4" /> Agent Status</TabsTrigger>
                 </TabsList>
 
                 {/* Configuration Tab */}
                 <TabsContent value="configuration" className="space-y-6">
                     <div className="flex gap-3">
                         <div className="flex ml-auto gap-2">
-                            <Button onClick={handleSaveConfig}>
-                                <Save className="h-4 w-4 mr-2" />
-                                Save Configuration
-                            </Button>
                             <Button onClick={handleSaveAndUpdate} disabled={isUpdating} className="bg-primary hover:bg-primary/90">
                                 {isUpdating ? (
                                     <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
@@ -301,10 +235,7 @@ export default function AgentSettings() {
                         </CardHeader>
 
                         <CardContent className="space-y-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="server-url">Ivana Server URL</Label>
-                                <Input id="server-url" defaultValue={settings?.serverUrl} onChange={(e) => setSettings({ ...settings!, serverUrl: e.target.value })} />
-                            </div>
+                            <ServerUrlInput settings={settings} setSettings={setSettings} />
                             
                             <div className="space-y-2">
                                 <Label htmlFor="server-port">Ivana Server Port</Label>
@@ -390,73 +321,6 @@ export default function AgentSettings() {
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-
-                {/* Agent Status Tab */}
-                <TabsContent value="status" className="space-y-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Shield className="h-5 w-5" />
-                                Agent Status Overview
-                            </CardTitle>
-                            <CardDescription>Monitor the status of all deployed agents</CardDescription>
-                        </CardHeader>
-
-                        <CardContent>
-                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                                {/* Connected Agents */}
-                                <div className="text-center p-4 border rounded-lg">
-                                    <div className="text-2xl font-bold text-green-600">2</div>
-                                    <div className="text-sm text-muted-foreground">Connected</div>
-                                </div>
-
-                                {/* Disconnected Agents */}
-                                <div className="text-center p-4 border rounded-lg">
-                                    <div className="text-2xl font-bold text-red-600">1</div>
-                                    <div className="text-sm text-muted-foreground">Disconnected</div>
-                                </div>
-                                
-                                {/* Outdated Agents */}
-                                <div className="text-center p-4 border rounded-lg">
-                                    <div className="text-2xl font-bold text-yellow-600">1</div>
-                                    <div className="text-sm text-muted-foreground">Outdated</div>
-                                </div>
-                                
-                                {/* Total Agents */}
-                                <div className="text-center p-4 border rounded-lg">
-                                    <div className="text-2xl font-bold text-blue-500">4</div>
-                                    <div className="text-sm text-muted-foreground">Total</div>
-                                </div>
-                            </div>
-
-                            <div className="space-y-3">
-                                {
-                                    agentStatus.map((agent, index) => (
-                                        <div key={index} className="flex border-l-4 border-l-primary items-center justify-between p-4 border rounded-lg">
-                                            <div className="flex items-center gap-3">
-                                                {getStatusIcon(agent.status)}
-                                                <div>
-                                                    <p className="font-medium">{agent.server}</p>
-                                                    <p className="text-sm text-muted-foreground">{agent.ip}</p>
-                                                </div>
-                                            </div>
-
-                                            <div className="flex items-center gap-4">
-                                                <div className="text-right">
-                                                    <p className="text-sm font-medium">v{agent.version}</p>
-                                                    <p className="text-xs text-muted-foreground">{agent.lastSeen}</p>
-                                                </div>
-
-                                                <Badge className={getStatusVariant(agent.status)}>{agent.status}</Badge>
-                                            </div>
-                                        </div>
-
-                                    ))
-                                }
                             </div>
                         </CardContent>
                     </Card>

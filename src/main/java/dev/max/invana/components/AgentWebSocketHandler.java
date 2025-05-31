@@ -6,6 +6,7 @@ import dev.max.invana.dtos.AgentWebSocketMessage;
 import dev.max.invana.entities.Agent;
 import dev.max.invana.enums.AgentStatus;
 import dev.max.invana.repositories.AgentRepository;
+import dev.max.invana.services.AgentSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
@@ -21,6 +22,9 @@ public class AgentWebSocketHandler extends TextWebSocketHandler {
 
     @Autowired
     private AgentRepository agentRepository;
+
+    @Autowired
+    private AgentSettingsService agentSettingsService;
 
     private final Set<WebSocketSession> sessions = Collections.synchronizedSet(new HashSet<>());
     private final Map<String, String> sessionToAgentId = new HashMap<>();
@@ -40,8 +44,8 @@ public class AgentWebSocketHandler extends TextWebSocketHandler {
             agentRepository.save(agent.get());
         }
 
-        sessions.remove(session);
         sessionToAgentId.remove(session.getId());
+        sessions.remove(session);
 
         System.out.println("Agent disconnected: " + session.getId());
     }
@@ -76,6 +80,26 @@ public class AgentWebSocketHandler extends TextWebSocketHandler {
         }
     }
 
+    public void sendDenialToAgent(String agentId) {
+        synchronized (sessions) {
+            for(WebSocketSession session : sessions) {
+                String mappedAgentId = sessionToAgentId.get(session.getId());
+                if(agentId.equals(mappedAgentId)) {
+                    try {
+                        if(session.isOpen()) {
+                            session.sendMessage(new TextMessage("DENIED"));
+                            System.out.println("Sent denial to agent: " + agentId);
+                        }
+                    } catch (Exception e) {
+                        System.err.println("Error sending denial to agent " + agentId);
+                        e.printStackTrace();
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
     private void handleRegister(WebSocketSession session, Object payload) throws IOException {
         AgentRegistrationDto req = objectMapper.convertValue(payload, AgentRegistrationDto.class);
 
@@ -100,31 +124,67 @@ public class AgentWebSocketHandler extends TextWebSocketHandler {
         // Extract agentId from payload
         Map<String, Object> data = objectMapper.convertValue(payload, Map.class);
         String agentId = (String) data.get("id");
+        String agentToken = (String) data.get("token");
+        String exceptedToken = agentSettingsService.getSettings().getToken();
 
-        if (agentId == null) {
-            session.sendMessage(new TextMessage("HEARTBEAT_DENY"));
+        if (agentId == null || agentToken == null || !agentToken.equals(exceptedToken)) {
+            Optional<Agent> agentOpt = agentRepository.findById(agentId);
+
+            agentOpt.ifPresent(agent -> {
+                agent.setStatus(AgentStatus.UNAUTHENTICATED);
+                agentRepository.save(agent);
+            });
+
+            session.sendMessage(new TextMessage("AUTH_DENIED"));
             return;
         }
 
         Optional<Agent> agentOpt = agentRepository.findById(agentId);
 
-        if (agentOpt.isPresent() && agentOpt.get().getStatus() != AgentStatus.PENDING) {
-            if(!sessionToAgentId.containsKey(session.getId())) {
-                System.out.println("Agent connected: " + agentId);
-                sessionToAgentId.put(session.getId(), agentId);
+        if (agentOpt.isPresent()) {
+            Agent agent = agentOpt.get();
+
+            if(agent.getStatus() != AgentStatus.PENDING) {
+                sessionToAgentId.putIfAbsent(session.getId(), agentId);
+                agent.setLastSeen(LocalDateTime.now());
+                agent.setStatus(AgentStatus.CONNECTED);
+                agentRepository.save(agent);
+                session.sendMessage(new TextMessage("HEARTBEAT_ACK"));
+            } else {
+                session.sendMessage(new TextMessage("HEARTBEAT_DENY"));
             }
 
-            Agent agent = agentOpt.get();
-            agent.setLastSeen(LocalDateTime.now());
-            agent.setStatus(AgentStatus.CONNECTED);
-            agentRepository.save(agent);
-            session.sendMessage(new TextMessage("HEARTBEAT_ACK"));
         } else {
-            session.sendMessage(new TextMessage("HEARTBEAT_DENY"));
+            session.sendMessage(new TextMessage("AUTH_DENIED"));
         }
     }
 
     public List<Agent> getRegisteredAgents() {
         return agentRepository.findAll().stream().filter(a -> a.getStatus() != AgentStatus.PENDING).toList();
+    }
+
+    private boolean isAuthenticated(String providedToken) {
+        String expected = agentSettingsService.getSettings().getToken();
+        return expected != null && expected.equals(providedToken);
+    }
+
+    public void sendConfigToAgent(String agentId, String configJson) {
+        synchronized (sessions) {
+            for(WebSocketSession session : sessions) {
+                String mappedAgentId = sessionToAgentId.get(session.getId());
+                if (agentId.equals(mappedAgentId)) {
+                    try {
+                        if(session.isOpen()) {
+                            session.sendMessage(new TextMessage(configJson));
+                            System.out.println("Sent config to accepted agent: " + agentId);
+                        }
+                    } catch (Exception e) {
+                        System.err.println("Error sending config to agent " + agentId);
+                        e.printStackTrace();
+                    }
+                    break;
+                }
+            }
+        }
     }
 }

@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "../ui/dialog"
 import { Button } from "../ui/button";
 import { Cpu, HardDrive, Monitor, MoreHorizontalIcon, Plus, Server, Settings, Trash } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
-import { getBadgeStyle, timeAgo } from "@/lib/utils";
+import { cn, getBadgeStyle, timeAgo } from "@/lib/utils";
 import { Badge } from "../ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { agentApi } from "@/api/impl/agentApi";
@@ -214,7 +214,7 @@ export default function AgentInventory() {
                                     </div>
 
                                     <div className="flex items-center gap-2">
-                                        <Badge className={getBadgeStyle(server.environment)}>{server.environment}</Badge>
+                                        <Badge className={cn(getBadgeStyle(server.environment), "capitalize")}>{server.environment}</Badge>
                                         <Badge className={getBadgeStyle(server.status)}>{server.status}</Badge>
                                     </div>
                                 </div>
@@ -229,7 +229,7 @@ export default function AgentInventory() {
 
                                     <div className="flex items-center gap-2 text-muted-foreground">
                                         <Cpu className="h-4 w-4" />
-                                        <span className="text-sm">{server.os}</span>
+                                        <span className="capitalize text-sm">{server.os}</span>
                                     </div>
                                     
                                     <div className="flex items-center gap-2 text-muted-foreground">

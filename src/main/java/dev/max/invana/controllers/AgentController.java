@@ -1,20 +1,20 @@
 package dev.max.invana.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.max.invana.components.AgentWebSocketHandler;
 import dev.max.invana.dtos.AgentAcceptDto;
 import dev.max.invana.dtos.AgentRegistrationDto;
 import dev.max.invana.entities.Agent;
 import dev.max.invana.enums.AgentStatus;
 import dev.max.invana.repositories.AgentRepository;
+import dev.max.invana.services.AgentSettingsService;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/agents")
@@ -22,10 +22,14 @@ import java.util.Optional;
 public class AgentController {
 
     private final AgentRepository agentRepository;
+    private final AgentSettingsService settingsService;
+    private final AgentWebSocketHandler socketHandler;
+    private final ObjectMapper objectMapper;
 
     @Transactional
     @PostMapping("/{id}/deny")
     public void denyAgent(@PathVariable String id) {
+        socketHandler.sendDenialToAgent(id);
         agentRepository.deleteById(id);
     }
 
@@ -37,7 +41,16 @@ public class AgentController {
         agent.setEnvironment(body.getEnvironment());
         agent.setStatus(AgentStatus.CONNECTED);
         agent.setLastSeen(LocalDateTime.now());
-        return agentRepository.save(agent);
+        Agent updated = agentRepository.save(agent);
+
+        try {
+            String configJson = objectMapper.writeValueAsString(settingsService.getSettings());
+            socketHandler.sendConfigToAgent(updated.getId(), configJson);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return updated;
     }
 
     @GetMapping("/pending")
