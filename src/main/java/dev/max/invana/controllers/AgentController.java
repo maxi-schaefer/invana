@@ -23,22 +23,6 @@ public class AgentController {
 
     private final AgentRepository agentRepository;
 
-    @PostMapping("/register")
-    public Agent registerAgent(@RequestBody AgentRegistrationDto req) {
-        Agent agent = new Agent();
-        agent.setName(req.getName());
-        agent.setHostname(req.getHostname());
-        agent.setIp(req.getIp());
-        agent.setEnvironment(req.getEnvironment());
-        agent.setOs(req.getOs());
-        agent.setServices(req.getServices());
-        agent.setVersion(req.getVersion());
-        agent.setStatus(AgentStatus.PENDING);
-        agent.setLastSeen(LocalDateTime.now());
-
-        return agentRepository.save(agent);
-    }
-
     @Transactional
     @PostMapping("/{id}/deny")
     public void denyAgent(@PathVariable String id) {
@@ -53,22 +37,6 @@ public class AgentController {
         agent.setEnvironment(body.getEnvironment());
         agent.setStatus(AgentStatus.CONNECTED);
         agent.setLastSeen(LocalDateTime.now());
-        return agentRepository.save(agent);
-    }
-
-    @PostMapping("/heartbeat")
-    public Agent heartbeat(@RequestBody Map<String, String> body) {
-        String ip = body.get("ip");
-
-        Agent agent = agentRepository.findAll()
-                .stream()
-                .filter(a -> a.getIp().equalsIgnoreCase(ip) && a.getStatus() != AgentStatus.PENDING)
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Agent not registered or pending"));
-
-        agent.setLastSeen(LocalDateTime.now());
-        agent.setStatus(AgentStatus.CONNECTED);
-
         return agentRepository.save(agent);
     }
 

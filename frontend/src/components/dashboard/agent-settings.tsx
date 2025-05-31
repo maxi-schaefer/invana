@@ -95,7 +95,7 @@ export default function AgentSettings() {
                 toast.error("Failed to save agent configuration");
             }
 
-            toast.success("Agent configuration saved successfully!");
+            toast.success((res.data as any).message);
         } catch(error) {
             console.error(error);
             toast.error("Failed to save agent configuration")

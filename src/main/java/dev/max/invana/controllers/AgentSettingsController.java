@@ -3,6 +3,7 @@ package dev.max.invana.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.max.invana.components.AgentWebSocketHandler;
 import dev.max.invana.entities.AgentSettings;
+import dev.max.invana.response.SaveAgentSettingsResponse;
 import dev.max.invana.services.AgentSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ public class AgentSettingsController {
     private ObjectMapper objectMapper;
 
     @PostMapping
-    public ResponseEntity<AgentSettings> updateSettings(@RequestBody AgentSettings settings) {
+    public ResponseEntity<?> updateSettings(@RequestBody AgentSettings settings) {
         AgentSettings updated = service.saveSettings(settings);
 
         try {
@@ -35,7 +36,11 @@ public class AgentSettingsController {
 
         System.out.println("saving config: " + updated);
 
-        return ResponseEntity.ok(updated);
+        SaveAgentSettingsResponse res = new SaveAgentSettingsResponse();
+        res.setAgentSettings(updated);
+        res.setMessage("Agent config updated and deployed to " + socketHandler.getRegisteredAgents().size() + " agent" + (socketHandler.getRegisteredAgents().size() > 1 ? "s" : ""));
+
+        return ResponseEntity.ok(res);
     }
 
     @GetMapping

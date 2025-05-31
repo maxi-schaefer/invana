@@ -51,7 +51,7 @@ export default function AgentInventory() {
             fetchPendingServers();
             fetchServers();
             forceUpdate(x => x + 1);
-        }, 30000); // TODO: Add from server settings
+        }, 30000);
     
         return () => clearInterval(interval);
     }, []);
