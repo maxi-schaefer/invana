@@ -2,7 +2,6 @@ import React, { createContext, useContext, useEffect, useRef, useState } from "r
 import SockJS from "sockjs-client";
 import { toast } from "sonner";
 import { Client, type Message } from "@stomp/stompjs";
-import type ServerType from "@/types/ServerType";
 
 interface SocketContextType {
   client: Client | null;

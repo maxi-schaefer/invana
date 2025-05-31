@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: invana-mysql
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: invana
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  app:
+    build: .
+    container_name: invana-app
+    depends_on:
+      - mysql
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/invana?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: secret
+      INVANA_DEFAULTADMINEMAIL: admin@example.com
+      INVANA_DEFAULTADMINPASSWORD: password
+      IVANA_DEFAULT_AGENT_TOKEN: ivana_agent_token_default
+      IVANA_DEFAULT_AGENT_TLS: true
+      IVANA_DEFAULT_AGENT_INTERVAL: 5
+      IVANA_DEFAULT_AGENT_RETRIES: 3
+      IVANA_DEFAULT_AGENT_TIMEOUT: 30
+      IVANA_DEFAULT_AGENT_LOGGING: false
+      IVANA_DEFAULT_SERVER_URL: https://localhost
+      IVANA_DEFAULT_SERVER_PORT: 8080
+      SECURITY_JWT_SECRET_KEY: 645c2b17e35041ebd6f2e0b32494957bb255c8482349f449d2230609a36c184d
+      SECURITY_JWT_EXPIRATION_TIME: 3600000
+
+volumes:
+  mysql_data:
