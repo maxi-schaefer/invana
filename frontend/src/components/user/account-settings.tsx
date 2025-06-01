@@ -32,6 +32,8 @@ export default function AccountSettings() {
     const handleSaveProfile = () => {
         setIsUpdating(true);
 
+        
+
         setTimeout(() => setIsUpdating(false), 3000);
     }
 

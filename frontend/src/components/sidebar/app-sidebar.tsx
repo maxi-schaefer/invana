@@ -8,6 +8,7 @@ import DefaultAvatar from '../../assets/DefaultAvatar.svg'
 import { DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '../ui/dropdown-menu';
 import { isAdmin } from '@/utils/auth';
 import type { User } from '@/types/User';
+import { cn } from '@/lib/utils';
 
 // Menu item variables
 const menuItems = [
@@ -60,7 +61,7 @@ export function AppSidebar({ activeSection = "dashboard", onSectionChange }: App
     const { user, logout } = useAuth();
 
     return (
-        <Sidebar collapsible='icon' variant='inset' >
+        <Sidebar collapsible='icon' variant='sidebar' >
         <SidebarHeader className="border-b border-sidebar-border">
             <div className="flex items-center gap-2 px-2 py-2">
 
@@ -79,7 +80,9 @@ export function AppSidebar({ activeSection = "dashboard", onSectionChange }: App
 
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <button className="flex ml-auto items-center gap-2 rounded-lg p-1 hover:bg-sidebar-accent transition-colors cursor-pointer">
+                        <button className={
+                            cn("flex items-center gap-2 rounded-lg p-1 hover:bg-sidebar-accent transition-colors cursor-pointer", useSidebar().open ? "ml-auto" : "-ml-3")
+                        }>
                             <Avatar className='h-8 w-8'>
                                 <AvatarImage className='rounded-full' src={"https://avatars.githubusercontent.com/u/95922236?v=4"} alt={user?.fullName} />
                                 <AvatarFallback><img src={DefaultAvatar} alt="" /></AvatarFallback>
