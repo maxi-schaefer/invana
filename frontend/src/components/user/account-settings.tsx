@@ -9,6 +9,8 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { useAuth } from "@/hooks/use-auth";
+import { Badge } from "../ui/badge";
+import { Separator } from "../ui/separator";
 
 export default function AccountSettings() {
     const [showCurrentPassword, setShowCurrentPassword] = useState(false);
@@ -31,6 +33,14 @@ export default function AccountSettings() {
         setIsUpdating(true);
 
         setTimeout(() => setIsUpdating(false), 3000);
+    }
+
+    const formatDate = (dateString: string) => {
+        return new Date(dateString).toLocaleDateString("us-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric"
+        })
     }
 
     return (
@@ -76,16 +86,48 @@ export default function AccountSettings() {
                                 </div>
 
                                 <div className="flex-1 space-y-4 w-full">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="full-name">Full Name</Label>
-                                        <Input id="full-name" defaultValue={user?.fullName} />
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="full-name">Full Name</Label>
+                                            <Input id="full-name" defaultValue={user?.fullName} />
+                                        </div>
+                                
+                                        <div className="space-y-2">
+                                            <Label htmlFor="email">Email</Label>
+                                            <Input id="email" type="email" defaultValue={user?.email} />
+                                        </div>
                                     </div>
-                            
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="user-id">User Id</Label>
+                                            <Input id="user-id" defaultValue={user?.id} disabled className="bg-muted" />
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <Label htmlFor="user-role">Role</Label>
+                                            <div className="flex items-center gap-2">
+                                                <Input id="user-role" className="bg-muted flex-1" disabled defaultValue={user?.role} />
+                                                <Badge variant={user?.role === "ADMIN" ? "default" : "secondary"}>{user?.role}</Badge>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div className="space-y-2">
-                                        <Label htmlFor="email">Email</Label>
-                                        <Input id="email" type="email" defaultValue={user?.email} />
+                                        <Label htmlFor="user-joined">Member since</Label>
+                                        <Input id="user-joined" defaultValue={formatDate(user?.createdAt || "0")} disabled className="bg-muted" />
                                     </div>
                                 </div>
+                            </div>
+
+                            <Separator />
+
+                            <div className="flex justify-between items-center">
+                                <div className="text-sm text-muted-foreground">Last Updated: {formatDate(user?.updatedAt || "0")}</div>
+                                <Button onClick={handleSaveProfile} disabled={isUpdating}>
+                                    { isUpdating ? "Saving..." : "Save Changes" }
+                                </Button>
                             </div>
                         </CardContent>
                     </Card>
