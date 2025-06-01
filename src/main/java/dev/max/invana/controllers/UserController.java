@@ -76,7 +76,7 @@ public class UserController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User authUser = (User) authentication.getPrincipal();
 
-        if(authUser.getId().equalsIgnoreCase(id)) {
+        if(authUser.getId().equalsIgnoreCase(id) || authUser.getRole().equals(User.Role.ADMIN)) {
             User user = userService.updateUser(id, updatedUser);
             return ResponseEntity.ok(user);
         }

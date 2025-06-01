@@ -133,8 +133,9 @@ public class AgentWebSocketHandler extends TextWebSocketHandler {
         if (agentId == null || agentToken == null || !agentToken.equals(exceptedToken)) {
             Optional<Agent> agentOpt = agentRepository.findById(agentId);
 
+
             agentOpt.ifPresent(agent -> {
-                agent.setStatus(AgentStatus.UNAUTHENTICATED);
+                agent.setStatus(agent.getStatus() != AgentStatus.PENDING ? AgentStatus.UNAUTHENTICATED : AgentStatus.PENDING);
                 agentRepository.save(agent);
 
                 frontendNotificationService.sendAgentUpdate(agent);

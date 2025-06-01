@@ -108,8 +108,9 @@ public class FilesController {
             After=network.target
 
             [Service]
-            ExecStart=$INSTALL_DIR/venv/bin/python $INSTALL_DIR/agent.py
-            WorkingDirectory=$INSTALL_DIR
+            ExecStartPre=/bin/bash -c 'until [ -f /opt/invana-agent/config.json ]; do echo "Waiting for config.json..."; sleep 1; done'
+            ExecStart=/opt/invana-agent/venv/bin/python /opt/invana-agent/agent.py
+            WorkingDirectory=/opt/invana-agent
             Restart=always
             User=root
 
@@ -120,6 +121,8 @@ public class FilesController {
             systemctl daemon-reexec
             systemctl daemon-reload
             systemctl enable invana-agent
+            echo ">> Waiting 2 seconds before starting service..."
+            sleep 2
             systemctl start invana-agent
 
             echo ">> invana Agent installed successfully."
