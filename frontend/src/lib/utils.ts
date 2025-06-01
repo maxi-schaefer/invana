@@ -10,19 +10,19 @@ export function getBadgeStyle(status: string): string {
 
     // Health status badget
     case "up-to-date":
-      return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
+      return "capitalize bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
     case "outdated":
-      return "bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400"
+      return "capitalize bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400"
     case "error":
-      return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400"
+      return "capitalize sbg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400"
 
     // Environment status badge
     case "production":
-      return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400"
+      return "capitalize bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400"
     case "staging":
-      return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400"
+      return "capitalize bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400"
     case "development":
-      return "bg-fuchsia-100 text-fuchsia-800 dark:bg-fuchsia-900/20 dark:text-fuchsia-400"
+      return "capitalize bg-fuchsia-100 text-fuchsia-800 dark:bg-fuchsia-900/20 dark:text-fuchsia-400"
 
     // Script category badge
     case "docker":
@@ -56,11 +56,11 @@ export function getBadgeStyle(status: string): string {
 
     // Server status badge
     case "connected":
-      return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
+      return "capitalize bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
     case "unauthenticated":
-      return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400";
+      return "capitalize bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400";
     case "disconnected":
-      return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400";
+      return "capitalize bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400";
 
 
     default:

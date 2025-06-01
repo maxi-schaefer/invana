@@ -144,7 +144,7 @@ export function AppSidebar({ activeSection = "dashboard", onSectionChange }: App
                     <SidebarGroupContent>
                         <SidebarMenu>
                             <SidebarMenuItem>
-                                <SidebarMenuButton onClick={() => onSectionChange?.('agents')}>
+                                <SidebarMenuButton onClick={() => onSectionChange?.('agents inventory')}>
                                     <Server className='h-4 w-4' />
                                     <span>Add Server</span>
                                 </SidebarMenuButton>

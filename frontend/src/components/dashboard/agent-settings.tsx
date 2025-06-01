@@ -16,6 +16,7 @@ import { type AgentSettings } from "@/types/AgentSettings";
 import { agentSettingsApi } from "@/api/impl/agentSettings";
 import Loading from "../ui/loading";
 import ServerUrlInput from "../ui/server-url-input";
+import { LinuxInstallCommand } from "../ui/linux-install-button";
 
 export default function AgentSettings() {
     const [showToken, setShowToken] = useState(false);
@@ -307,16 +308,7 @@ export default function AgentSettings() {
                                     <Command className="h-5 w-5 mr-2 text-muted-foreground" />
                                     Installation Commands
                                 </div>
-                                <div className="space-y-3">
-                                    <div>
-                                        <Label className="text-sm font-medium">Linux</Label>
-                                        <div className="bg-muted p-3 rounded-md mt-1">
-                                            <code className="text-sm">
-                                                curl -sSL https://ivana.company.com/install.sh | sudo bash -s -- --token {settings?.token}
-                                            </code>
-                                        </div>
-                                    </div>
-                                </div>
+                                <LinuxInstallCommand settings={settings} />
                             </div>
                         </CardContent>
                     </Card>
