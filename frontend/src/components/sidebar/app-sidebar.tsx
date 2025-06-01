@@ -12,34 +12,34 @@ import type { User } from '@/types/User';
 // Menu item variables
 const menuItems = [
     {
-      title: "Dashboard",
-      icon: Home,
-      id: "dashboard",
+        title: "Dashboard",
+        icon: Home,
+        id: "dashboard",
     },
     {
-      title: "Agent Inventory",
-      icon: Server,
-      id: "agents inventory",
+        title: "Agent Inventory",
+        icon: Server,
+        id: "agents inventory",
     },
     {
-      title: "Services",
-      icon: Package,
-      id: "services",
+        title: "Services",
+        icon: Package,
+        id: "services",
     },
     {
-      title: "Script Library",
-      icon: Library,
-      id: "scripts",
+        title: "Script Library",
+        icon: Library,
+        id: "scripts",
     },
     {
-      title: "Version History",
-      icon: History,
-      id: "history",
+        title: "Version History",
+        icon: History,
+        id: "history",
     },
     {
-      title: "Monitoring",
-      icon: Activity,
-      id: "monitoring",
+        title: "Monitoring",
+        icon: Activity,
+        id: "monitoring",
     },
     {
         title: "Agent Settings",
@@ -102,7 +102,7 @@ export function AppSidebar({ activeSection = "dashboard", onSectionChange }: App
 
                         <DropdownMenuSeparator />
 
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => onSectionChange?.("account")}>
                             <UserCog className='h-4 w-4 mr-2'/>
                             Account Settings
                         </DropdownMenuItem>

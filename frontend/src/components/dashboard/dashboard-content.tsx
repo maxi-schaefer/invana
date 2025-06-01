@@ -8,6 +8,11 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import VersionHistory from './version-history';
 import AgentSettings from './agent-settings';
 import AgentInventory from './agent-inventory';
+import AccountSettings from '../user/account-settings';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
+import { version } from "../../../package.json"
+import { Github } from 'lucide-react';
+import { Badge } from '../ui/badge';
 
 export default function DashboardContent() {
     const [activeSection, setActiveSection] = React.useState<string>('dashboard');
@@ -24,6 +29,8 @@ export default function DashboardContent() {
                 return <VersionHistory />;
             case 'agents':
                 return <AgentSettings />;
+            case "account":
+                return <AccountSettings />;
             default:
                 return <DashboardOverview />;
         }
@@ -56,7 +63,30 @@ export default function DashboardContent() {
                         <ModeToggle />
                     </div>
                 </header>
-                <div className="flex-1 overflow-auto p-4">{renderContent()}</div>
+                <div className="flex-1 overflow-auto p-4">
+                    {renderContent()}
+
+                    {/* Footer */}
+                    <div className="fixed bottom-4 right-4 flex items-center space-x-4">
+                        <Badge variant={'outline'}>
+                            <span className='text-muted-foreground' >{version}</span>
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <a 
+                                            href="https://github.com/maxi-schaefer/invana"
+                                            target='_blank'
+                                            rel='noopener noreferrer'
+                                            className="hover:text-foreground text-muted-foreground">
+                                                <Github className='h-4 w-4' />
+                                            </a>
+                                    </TooltipTrigger>
+                                    <TooltipContent>View on Github</TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                        </Badge>
+                    </div>
+                </div>
             </SidebarInset>
         </>
     )
