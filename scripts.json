@@ -87,17 +87,5 @@
     "category" : "Go",
     "usage" : "Go runtime"
   } ],
-  "customs" : [ {
-    "name" : "Zenworks ",
-    "description" : "Get Zenworks version from file",
-    "script" : "cat /opt/novell/zenworks/version.txt",
-    "category" : "Novell",
-    "usage" : ""
-  }, {
-    "name" : "MySQL Docker",
-    "description" : "mysql docker version",
-    "script" : "docker attach mysql mysql --version | grep -o '[0-9]\\+\\.[0-9]\\+\\.[0-9]\\+'",
-    "category" : "MySQL",
-    "usage" : ""
-  } ]
+  "customs" : []
 }

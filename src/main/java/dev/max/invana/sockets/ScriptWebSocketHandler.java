@@ -1,6 +1,5 @@
 package dev.max.invana.sockets;
 
-import dev.max.invana.model.Script;
 import dev.max.invana.model.ScriptCategories;
 import lombok.AllArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;

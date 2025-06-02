@@ -62,7 +62,7 @@ public class UserController {
 
         User user = (User) authentication.getPrincipal();
 
-        if(user.getId().equalsIgnoreCase(id)) {
+        if(user.getId().equalsIgnoreCase(id) || user.getRole().equals(User.Role.USER)) {
             log.info("Deleting User with following ID: " + id);
             userService.deleteUser(id);
             return ResponseEntity.ok("Successfully deleted User!");

@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui
 import { getBadgeStyle } from "@/lib/utils";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
-import { scriptApi } from "@/api/impl/scriptApt";
+import { scriptApi } from "@/api/impl/scriptApi";
 import Loading from "../ui/loading";
 import { LinuxCommand } from "../ui/linux-command";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";

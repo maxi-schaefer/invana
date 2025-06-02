@@ -5,14 +5,18 @@ import type ServerType from '@/types/ServerType'
 import { isAdmin } from '@/utils/auth'
 import { useAuth } from '@/hooks/use-auth'
 import type { User } from '@/types/User'
+import AgentSettingsDialog from './AgentSettingsDialog'
+import { useState } from 'react'
 
 
 export default function AgentActionsMenu({ onDeny, server }: { onDeny: (id: string) => void, server: ServerType }) {
-
+    const [settingsOpen, setSettingsOpen] = useState(false);
     const { user } = useAuth();
 
   return (
    <DropdownMenu>
+        <AgentSettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} agent={server}/>
+
         <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon">
                 <MoreHorizontalIcon className="h-4 w-4" />
@@ -20,10 +24,11 @@ export default function AgentActionsMenu({ onDeny, server }: { onDeny: (id: stri
         </DropdownMenuTrigger>
 
         <DropdownMenuContent align="end">
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
                 <Settings className="h-4 w-4 mr-2" />
                 Settings
             </DropdownMenuItem>
+
             <DropdownMenuItem>
                 <Monitor className="h-4 w-4 mr-2" />
                 Check Status

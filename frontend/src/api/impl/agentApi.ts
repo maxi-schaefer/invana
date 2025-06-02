@@ -5,4 +5,5 @@ export const agentApi = {
     denyAgent: (id: string) => axiosClient.post(`agents/${id}/deny`),
     getPending: () => axiosClient.get("agents/pending"),
     getAgents: () => axiosClient.get("agents"),
+    updateAgent: (id: string, params: any) => axiosClient.put(`agents/${id}`, params)
 }

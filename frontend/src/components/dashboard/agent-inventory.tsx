@@ -3,12 +3,10 @@ import { useEffect, useState } from "react"
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { Check, LayoutGrid, List, Plus, XIcon } from "lucide-react";
-import { getBadgeStyle } from "@/lib/utils";
 import { Badge } from "../ui/badge";
 import { agentApi } from "@/api/impl/agentApi";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { toast } from "sonner";
 import { useSocket } from "@/context/SocketProvider";
 import { isAdmin } from "@/utils/auth";
@@ -18,6 +16,7 @@ import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 import AgentCardGrid from "../agent-view/AgentCardGrid";
 import AgentCardList from "../agent-view/AgentCardList";
 import Loading from "../ui/loading";
+import AgentEnvironmentSelect from "../agent-view/AgentEnvironmentSelect";
 
 export default function AgentInventory() {
     const [servers, setServers] = useState<ServerType[]>([]);
@@ -202,33 +201,7 @@ export default function AgentInventory() {
                                                             />
                                                         </div>
                                                 
-                                                        <div className="space-y-1">
-                                                            <Label className="text-sm font-medium">Environment</Label>
-                                                            <Select
-                                                                value={server.environment}
-                                                                onValueChange={(e) =>
-                                                                    updatePendingServer(server.id, "environment", e)
-                                                                }
-                                                            >
-                                                                <SelectTrigger>
-                                                                    <SelectValue placeholder="Select environment" />
-                                                                </SelectTrigger>
-                                                                <SelectContent>
-                                                                    <SelectItem value="production">
-                                                                        <Badge className={getBadgeStyle("Production")}>Production</Badge>
-                                                                    </SelectItem>
-                                                                    <SelectItem value="staging">
-                                                                        <Badge className={getBadgeStyle("Staging")}>Staging</Badge>
-                                                                    </SelectItem>
-                                                                    <SelectItem value="development">
-                                                                        <Badge className={getBadgeStyle("Development")}>Development</Badge>
-                                                                    </SelectItem>
-                                                                    <SelectItem value="testing">
-                                                                        <Badge className={getBadgeStyle("Testing")}>Testing</Badge>
-                                                                    </SelectItem>
-                                                                </SelectContent>
-                                                            </Select>
-                                                        </div>
+                                                        <AgentEnvironmentSelect onUpdate={(e) => updatePendingServer(server.id, "environment", e)} server={server} />
                                                     </div>
                                                 
                                                     <div className="flex justify-end gap-2 pt-2">
