@@ -42,6 +42,7 @@ public class AgentWebSocketHandler extends TextWebSocketHandler {
         Optional<Agent> agent = agentRepository.findById(sessionToAgentId.get(session.getId()));
 
         if(agent.isPresent()) {
+            if(agent.get().getStatus() == AgentStatus.PENDING) return;
             agent.get().setStatus(AgentStatus.DISCONNECTED);
             Agent saved = agentRepository.save(agent.get());
             frontendNotificationService.sendAgentUpdate(saved);
@@ -138,6 +139,7 @@ public class AgentWebSocketHandler extends TextWebSocketHandler {
 
             agentOpt.ifPresent(agent -> {
                 agent.setStatus(agent.getStatus() != AgentStatus.PENDING ? AgentStatus.UNAUTHENTICATED : AgentStatus.PENDING);
+                sessionToAgentId.put(session.getId(), agentId);
                 agentRepository.save(agent);
 
                 frontendNotificationService.sendAgentUpdate(agent);
