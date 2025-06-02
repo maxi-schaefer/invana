@@ -87,5 +87,17 @@
     "category" : "Go",
     "usage" : "Go runtime"
   } ],
-  "customs" : []
+  "customs" : [ {
+    "name" : "test",
+    "description" : "test",
+    "script" : "cat /test/test.txt",
+    "category" : "test",
+    "usage" : "sdfsf"
+  }, {
+    "name" : "Zenworks",
+    "description" : "Returns zenworks version",
+    "script" : "cat text.txt",
+    "category" : "novell",
+    "usage" : ""
+  } ]
 }

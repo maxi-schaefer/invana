@@ -1,6 +1,7 @@
 package dev.max.invana.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import dev.max.invana.sockets.AgentWebSocketHandler;
 import dev.max.invana.entities.AgentSettings;
 import dev.max.invana.response.SaveAgentSettingsResponse;
@@ -27,7 +28,10 @@ public class AgentSettingsController {
         AgentSettings updated = service.saveSettings(settings);
 
         try {
-            String json = objectMapper.writeValueAsString(updated);
+            ObjectNode jsonNode = objectMapper.valueToTree(updated);
+            jsonNode.put("change", "config");
+
+            String json = objectMapper.writeValueAsString(jsonNode);
             socketHandler.broadcastConfig(json);
         } catch (Exception e) {
             e.printStackTrace();

@@ -1,10 +1,13 @@
     package dev.max.invana.sockets;
     
     import com.fasterxml.jackson.databind.ObjectMapper;
+    import com.fasterxml.jackson.databind.node.ObjectNode;
+    import dev.max.invana.components.ScriptService;
     import dev.max.invana.dtos.AgentRegistrationDto;
     import dev.max.invana.dtos.AgentWebSocketMessage;
     import dev.max.invana.entities.Agent;
     import dev.max.invana.enums.AgentStatus;
+    import dev.max.invana.model.ScriptCategories;
     import dev.max.invana.repositories.AgentRepository;
     import dev.max.invana.services.AgentSettingsService;
     import dev.max.invana.services.FrontendNotificationService;
@@ -27,7 +30,9 @@
         private AgentRepository agentRepository;
         private AgentSettingsService agentSettingsService;
         private FrontendNotificationService frontendNotificationService;
-    
+        private ScriptWebSocketHandler scriptWebSocketHandler;
+
+        private final ScriptService scriptService;
         private final Set<WebSocketSession> sessions = Collections.synchronizedSet(new HashSet<>());
         private final Map<String, String> sessionToAgentId = new HashMap<>();
         private final ObjectMapper objectMapper = new ObjectMapper();
@@ -83,6 +88,24 @@
                 }
             }
         }
+
+        public void sendToAgent(Agent agent, String json) {
+            synchronized (sessions) {
+                for(WebSocketSession session : sessions) {
+                    try {
+                        if(sessionToAgentId.get(session.getId()).equals(agent.getId())) {
+                            if(session.isOpen()) {
+                                session.sendMessage(new TextMessage(json));
+                                log.info("Sending scripts to: " + agent.getId());
+                            }
+                        }
+                    } catch (Exception e) {
+                        log.error("Error sending scripts to " + session.getRemoteAddress());
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
     
         public void sendDenialToAgent(String agentId) {
             synchronized (sessions) {
@@ -121,9 +144,17 @@
             Agent saved = agentRepository.save(agent);
             frontendNotificationService.sendAgentUpdate(saved);
             sessionToAgentId.put(session.getId(), saved.getId());
-    
-    
+
             session.sendMessage(new TextMessage("REGISTERED: " + saved.getId()));
+
+            ScriptCategories scripts = scriptService.getScripts();
+
+            ObjectNode root = objectMapper.createObjectNode();
+            root.put("change", "script");
+            root.set("payload", objectMapper.valueToTree(scripts));
+
+            String json = objectMapper.writeValueAsString(root);
+            sendToAgent(agent, json);
         }
     
         private void handleHeartbeat(WebSocketSession session, Object payload) throws IOException {
@@ -150,7 +181,7 @@
             }
     
             Optional<Agent> agentOpt = agentRepository.findById(agentId);
-    
+
             if (agentOpt.isPresent()) {
                 Agent agent = agentOpt.get();
     
