@@ -1,33 +1,55 @@
-# invana (develop)
+# Invana
 
-![dashboard](./assets//dashboard.jpeg)
+**Invana** is an open-source, self-hosted monitoring system designed to 
+track service versions running on your servers. Built with flexibility and privacy
+in mind, Invana helps teams gain visibility into the version landscape of their infrastructure.
 
-> *Version control should be elegant, not arcane.*
+> ⚠ **Status: In Development**
+> 
+> Invana is currently under active development.
+> Features, APIs, and structure are subject to
+> change
 
-**ivana** is a modern, lightweight version control system built with transparency, trust, and simplicity at its core. It’s fast, intuitive, and designed to stay out of your way — giving you full control without complexity.
+## 📦 Project Structure
+- `Appliance` - Main backend (Spring Boot) & Frontend (React) for managing and viewing data.
+- `Agent` - Lightweight agent that runs on monitored servers and executes detection scripts
 
-Welcome to the `develop` branch — where the newest ideas and features take shape. Things may break, but they also evolve here.
+## 🚀 Getting Started
+> These instructions assume basic familiarity with Docker and/or JavaScript/Java environments.
+> Full setup documentation coming soon.
 
----
+### Perequisites
+- Docker (optional, for appliance deployment)
+- Java 17+ (for backend)
+- Node.js 18+ (for frontend)
+- Bash/Python (for agent)
 
-## 🚧 What's in `develop`?
-
-This is the active development branch — new features, performance improvements, and experimental changes land here first.
-
-Current highlights:
-- ⚡ Experimental command-line enhancements
-- 🔍 In-progress audit trail & state visualizer
-- 🧪 Refined commit model for easier branching & merging
-- 📦 Plugin system scaffolding
-
-> **Note:** Stability is a work-in-progress. For production use, see the `main` branch.
-
----
-
-## 🔧 Getting Started
-
-```bash
-git clone https://github.com/your-org/ivana.git
-cd ivana
-git checkout develop
+### Quick Start (Dev Mode)
+1. Clone the repository:
+``` bash
+~$ git clone https://github.com/maxi-schaefer/invana
+~$ cd invana
+~$ git checkout -b develop
 ```
+
+2. Start the appliance (backend + frontend):
+```bash
+~$ cd ./frontend
+~$ npm install
+~$ npm run dev
+```
+
+For the backend import the project into your ide of choice and
+start `InvanaApplication`
+
+## 🤝 Contributing
+Contributions, feedback, and ideas are welcome!
+- Report issues in the [GitHub Issues](https://github.com/maxi-schaefer/invana/issues)
+- Fork the repo and submit a pull request
+- Join discussions on features or improvements
+
+## 📜 License
+Invana is [GPL-2.0 licensed](./LICENSE)
+
+## 💬 Contact
+Made with ♥ by [maxi-schaefer](https://github.com/maxi-schaefer)
