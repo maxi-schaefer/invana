@@ -21,6 +21,7 @@ import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
 
 type ScriptItem = {
+  id?: string;
   name: string;
   description: string;
   script: string;
@@ -93,11 +94,11 @@ export default function ScriptLibrary() {
       }
     }
 
-    const handleDelete = async (category: string, name: string) => {
+    const handleDelete = async (id: string) => {
       if(!confirm(`Are you sure you want to delete the script ${name}?`)) return;
 
       try {
-        await scriptApi.deleteScript(category, name);
+        await scriptApi.deleteScript(id);
         // fetchScripts();
       } catch (error) {
         console.error(error);
@@ -270,7 +271,7 @@ export default function ScriptLibrary() {
                                           <>
                                             <DropdownMenuSeparator />
                                             
-                                            <DropdownMenuItem className="text-destructive" onClick={() => handleDelete(script.category, script.name)}>
+                                            <DropdownMenuItem className="text-destructive" onClick={() => handleDelete(script.id || "")}>
                                               <Trash className=" text-destructive w-4 h-4 mr-2" />
                                               Remove
                                             </DropdownMenuItem>

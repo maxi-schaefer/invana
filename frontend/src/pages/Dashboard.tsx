@@ -34,7 +34,6 @@ export default function Dashboard() {
   return (
     <SidebarProvider defaultOpen={true}>
         <div className="flex min-h-screen w-full">
-            <AppSidebar />
             <DashboardContent />
         </div>
     </SidebarProvider>

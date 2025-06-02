@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/scripts")
@@ -36,26 +37,31 @@ public class ScriptsController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/customs/{id}")
+    public ResponseEntity<String> deleteCustomScript(@PathVariable String id) {
+        try {
+            boolean deleted = scriptService.deleteCustomScriptById(id);
+            if(!deleted) {
+                return ResponseEntity.status(404).body("Script not found or not a custom script");
+            }
+
+            socketHandler.notifyUpdate(scriptService.getScripts());
+            return ResponseEntity.ok("Custom script deleted successfully");
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body("Failed to delete custom script");
+        }
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<String> addScript(@RequestBody Script newScript) {
         try {
+            if(newScript.getId() == null || newScript.getId().isEmpty()) {
+                newScript.setId(UUID.randomUUID().toString());
+            }
+
             scriptService.addScriptToCategory(newScript);
             socketHandler.notifyUpdate(scriptService.getScripts());
-
-            List<Agent> agents = agentRepository.findAll().stream().filter(
-                    agent -> agent.getStatus() != AgentStatus.PENDING
-            ).toList();
-
-            for(Agent agent : agents) {
-                ScriptCategories scripts = scriptService.getScripts();
-
-                ObjectNode root = mapper.createObjectNode();
-                root.put("change", "script");
-                root.set("payload", mapper.valueToTree(scripts));
-
-                String json = mapper.writeValueAsString(root);
-                agentWebSocketHandler.sendToAgent(agent, json);
-            }
 
             return ResponseEntity.ok("Script added successfully");
         } catch (IllegalArgumentException e) {

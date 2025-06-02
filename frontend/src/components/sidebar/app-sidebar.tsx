@@ -61,7 +61,7 @@ export function AppSidebar({ activeSection = "dashboard", onSectionChange }: App
     const { user, logout } = useAuth();
 
     return (
-        <Sidebar collapsible='icon' variant='sidebar' >
+        <Sidebar collapsible='icon' variant='inset' >
         <SidebarHeader className="border-b border-sidebar-border">
             <div className="flex items-center gap-2 px-2 py-2">
 
