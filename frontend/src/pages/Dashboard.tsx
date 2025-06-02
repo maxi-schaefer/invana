@@ -4,6 +4,7 @@ import { useSocket } from '@/context/SocketProvider';
 import { useEffect } from 'react';
 import type ServerType from '@/types/ServerType';
 import { toast } from 'sonner';
+import { AppSidebar } from '@/components/sidebar/app-sidebar';
 
 export default function Dashboard() {
   const { connected, subscribe, send } = useSocket();
@@ -28,11 +29,12 @@ export default function Dashboard() {
 
       send('/app/ping', 'Hello server!');
     }
-  }, [connected]);
+  }, [connected, send, subscribe]);
 
   return (
     <SidebarProvider defaultOpen={true}>
         <div className="flex min-h-screen w-full">
+            <AppSidebar />
             <DashboardContent />
         </div>
     </SidebarProvider>

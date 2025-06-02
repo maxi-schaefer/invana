@@ -16,7 +16,7 @@ import { type AgentSettings } from "@/types/AgentSettings";
 import { agentSettingsApi } from "@/api/impl/agentSettings";
 import Loading from "../ui/loading";
 import ServerUrlInput from "../ui/server-url-input";
-import { LinuxCommand } from "../ui/linux-install-button";
+import { LinuxCommand } from "../ui/linux-command";
 
 export default function AgentSettings() {
     const [showToken, setShowToken] = useState(false);

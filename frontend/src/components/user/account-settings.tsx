@@ -4,7 +4,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui
 import { Upload, User } from "lucide-react";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { AvatarImage } from "@radix-ui/react-avatar";
-import DefaultAvatar from '../../assets/DefaultAvatar.svg'
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -76,7 +75,7 @@ export default function AccountSettings() {
                                 <div className="flex flex-col items-center gap-4">
                                     <Avatar className="h-24 w-24">
                                         <AvatarImage src={avatarPreview || "deimuada"} />
-                                        <AvatarFallback><img src={DefaultAvatar} alt="" /></AvatarFallback>
+                                        <AvatarFallback>{user?.fullName.at(0)}</AvatarFallback>
                                     </Avatar>
                                     <div className="flex gap-2">
                                         <Button variant={"outline"} size={"sm"} className="relative">

@@ -1,5 +1,6 @@
 server.port=8080
 spring.application.name=invana
+logging.file.path=/var/log/invana
 
 # ===============================
 # Invana Default User

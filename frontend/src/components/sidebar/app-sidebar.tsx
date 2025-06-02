@@ -85,7 +85,7 @@ export function AppSidebar({ activeSection = "dashboard", onSectionChange }: App
                         }>
                             <Avatar className='h-8 w-8'>
                                 <AvatarImage className='rounded-full' src={"https://avatars.githubusercontent.com/u/95922236?v=4"} alt={user?.fullName} />
-                                <AvatarFallback><img src={DefaultAvatar} alt="" /></AvatarFallback>
+                                <AvatarFallback>{user?.fullName.at(0)}</AvatarFallback>
                             </Avatar>
                         </button>
                     </DropdownMenuTrigger>
@@ -94,7 +94,7 @@ export function AppSidebar({ activeSection = "dashboard", onSectionChange }: App
                         <div className="flex items-center gap-2 p-2">
                             <Avatar className='h-8 w-8'>
                                 <AvatarImage className='rounded-full' src={"https://avatars.githubusercontent.com/u/95922236?v=4"} alt={user?.fullName} />
-                                <AvatarFallback><img src={DefaultAvatar} alt="" /></AvatarFallback>
+                                <AvatarFallback>{user?.fullName.at(0)}</AvatarFallback>
                             </Avatar>
 
                             <div className="flex flex-col">

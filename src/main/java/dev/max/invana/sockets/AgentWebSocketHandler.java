@@ -9,6 +9,7 @@ import dev.max.invana.repositories.AgentRepository;
 import dev.max.invana.services.AgentSettingsService;
 import dev.max.invana.services.FrontendNotificationService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
@@ -20,6 +21,7 @@ import java.util.*;
 
 @Component
 @AllArgsConstructor
+@Slf4j
 public class AgentWebSocketHandler extends TextWebSocketHandler {
 
     private AgentRepository agentRepository;
@@ -48,7 +50,7 @@ public class AgentWebSocketHandler extends TextWebSocketHandler {
         sessionToAgentId.remove(session.getId());
         sessions.remove(session);
 
-        System.out.println("Agent disconnected: " + session.getId());
+        log.info("Agent disconnected: " + session.getId());
     }
 
     @Override
@@ -70,11 +72,11 @@ public class AgentWebSocketHandler extends TextWebSocketHandler {
                     if(agent.isPresent() && agent.get().getStatus() != AgentStatus.PENDING) {
                         if(session.isOpen()) {
                             session.sendMessage(new TextMessage(json));
-                            System.out.println("Sent config to: " + session.getRemoteAddress());
+                            log.info("Sent config to: " + session.getRemoteAddress());
                         }
                     }
                 } catch (Exception e) {
-                    System.err.println("Error sending config to " + session.getRemoteAddress());
+                    log.error("Error sending config to " + session.getRemoteAddress());
                     e.printStackTrace();
                 }
             }
@@ -89,10 +91,10 @@ public class AgentWebSocketHandler extends TextWebSocketHandler {
                     try {
                         if(session.isOpen()) {
                             session.sendMessage(new TextMessage("DENIED"));
-                            System.out.println("Sent denial to agent: " + agentId);
+                            log.info("Sent denial to agent: " + agentId);
                         }
                     } catch (Exception e) {
-                        System.err.println("Error sending denial to agent " + agentId);
+                        log.error("Error sending denial to agent " + agentId);
                         e.printStackTrace();
                     }
                     break;
@@ -189,10 +191,10 @@ public class AgentWebSocketHandler extends TextWebSocketHandler {
                     try {
                         if(session.isOpen()) {
                             session.sendMessage(new TextMessage(configJson));
-                            System.out.println("Sent config to accepted agent: " + agentId);
+                            log.info("Sent config to accepted agent: " + agentId);
                         }
                     } catch (Exception e) {
-                        System.err.println("Error sending config to agent " + agentId);
+                        log.error("Error sending config to agent " + agentId);
                         e.printStackTrace();
                     }
                     break;

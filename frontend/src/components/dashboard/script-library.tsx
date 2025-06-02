@@ -9,7 +9,7 @@ import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { scriptApi } from "@/api/impl/scriptApt";
 import Loading from "../ui/loading";
-import { LinuxCommand } from "../ui/linux-install-button";
+import { LinuxCommand } from "../ui/linux-command";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { isAdmin } from "@/utils/auth";
 import { useAuth } from "@/hooks/use-auth";

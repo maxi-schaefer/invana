@@ -13,6 +13,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/
 import { version } from "../../../package.json"
 import { Github } from 'lucide-react';
 import { Badge } from '../ui/badge';
+import { Kbd } from '../command-menu/kbd';
 
 export default function DashboardContent() {
     const [activeSection, setActiveSection] = React.useState<string>('dashboard');
@@ -41,7 +42,7 @@ export default function DashboardContent() {
             <AppSidebar activeSection={activeSection} onSectionChange={setActiveSection} />
             <SidebarInset>
               
-                <header className="flex h-16 shrink-0 items-center gap-2 px-4">
+                <header className="flex h-16 shrink-0 items-center gap-2 px-4 border-b">
                     <SidebarTrigger className='-ml-1 cursor-pointer' />
                     <Breadcrumb>
                         <BreadcrumbList>
@@ -59,7 +60,12 @@ export default function DashboardContent() {
                         </BreadcrumbList>
                     </Breadcrumb>
 
-                    <div className="ml-auto">
+                    <div className="ml-auto flex items-center gap-2">
+                        <Badge variant="outline" className='hidden sm:flex'>
+                            <Kbd>⌘</Kbd>
+                            <Kbd>K</Kbd>
+                        </Badge>
+
                         <ModeToggle />
                     </div>
                 </header>
