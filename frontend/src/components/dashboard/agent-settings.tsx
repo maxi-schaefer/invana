@@ -16,7 +16,7 @@ import { type AgentSettings } from "@/types/AgentSettings";
 import { agentSettingsApi } from "@/api/impl/agentSettings";
 import Loading from "../ui/loading";
 import ServerUrlInput from "../ui/server-url-input";
-import { LinuxInstallCommand } from "../ui/linux-install-button";
+import { LinuxCommand } from "../ui/linux-install-button";
 
 export default function AgentSettings() {
     const [showToken, setShowToken] = useState(false);
@@ -308,7 +308,7 @@ export default function AgentSettings() {
                                     <Command className="h-5 w-5 mr-2 text-muted-foreground" />
                                     Installation Commands
                                 </div>
-                                <LinuxInstallCommand settings={settings} />
+                                <LinuxCommand settings={settings} />
                             </div>
                         </CardContent>
                     </Card>

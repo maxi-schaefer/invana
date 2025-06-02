@@ -2,7 +2,7 @@ import type ServerType from "@/types/ServerType";
 import { useEffect, useState } from "react"
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "../ui/dialog";
 import { Button } from "../ui/button";
-import { LayoutGrid, List, Plus } from "lucide-react";
+import { Check, LayoutGrid, List, Plus, XIcon } from "lucide-react";
 import { getBadgeStyle } from "@/lib/utils";
 import { Badge } from "../ui/badge";
 import { agentApi } from "@/api/impl/agentApi";
@@ -127,6 +127,9 @@ export default function AgentInventory() {
 
             fetchPendingServers();
             fetchServers();
+            
+            toast.success(`Successfully accepted ${(res.data as ServerType).name}`)
+
             setDialogOpen(false);
         } catch (error) {
             toast.error("An error occurred whilste accepting the agent!");
@@ -223,14 +226,11 @@ export default function AgentInventory() {
                                                     </div>
                                                 
                                                     <div className="flex justify-end gap-2 pt-2">
-                                                    <Button variant="destructive" onClick={() => denyAgent(server.id)}>
-                                                        Deny
+                                                    <Button variant="outline" className="hover:bg-destructive/40 dark:hover:bg-destructive/40" size={"icon"} onClick={() => denyAgent(server.id)}>
+                                                        <XIcon className="w-4 h-4" />
                                                     </Button>
-                                                    <Button
-                                                        className="bg-green-500 hover:bg-green-400"
-                                                        onClick={() => acceptAgent(server.id, server.name, server.environment)}
-                                                    >
-                                                        Accept
+                                                    <Button variant={"outline"} className="hover:bg-success/40 dark:hover:bg-success/40" size={"icon"} onClick={() => acceptAgent(server.id, server.name, server.environment)}>
+                                                        <Check className="h-4 w-4" />
                                                     </Button>
                                                     </div>
                                                 </div>                                  

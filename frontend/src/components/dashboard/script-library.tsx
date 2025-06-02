@@ -1,5 +1,5 @@
 import { Database, Globe, Package, Plus, Puzzle, Search, Zap } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "../ui/input";
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 import { TabsContent } from "@radix-ui/react-tabs";
@@ -7,6 +7,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui
 import { getBadgeStyle } from "@/lib/utils";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
+import { scriptApi } from "@/api/impl/scriptApt";
+import Loading from "../ui/loading";
+import { LinuxCommand } from "../ui/linux-install-button";
 
 type ScriptItem = {
   name: string;
@@ -22,119 +25,27 @@ type ScriptCategories = {
 
 export default function ScriptLibrary() {
     const [searchTerm, setSearchTerm] = useState('');
+    const [scriptCategories, setScriptCategories] = useState<ScriptCategories>({});
+    const [loading, setLoading] = useState(true);
 
-    // Mockup data for scripts
-    const scriptCategories: ScriptCategories = {
-        containers: [
-          {
-            name: "Docker Version",
-            description: "Get Docker engine version",
-            script: "docker --version | grep -o '[0-9]\\+\\.[0-9]\\+\\.[0-9]\\+'",
-            category: "Docker",
-            usage: "Container management",
-          },
-          {
-            name: "Docker Compose Version",
-            description: "Get Docker Compose version",
-            script: "docker-compose --version | grep -o '[0-9]\\+\\.[0-9]\\+\\.[0-9]\\+'",
-            category: "Docker",
-            usage: "Container orchestration",
-          },
-          {
-            name: "Kubernetes Version",
-            description: "Get Kubernetes cluster version",
-            script: "kubectl version --short | grep Server | grep -o '[0-9]\\+\\.[0-9]\\+\\.[0-9]\\+'",
-            category: "Kubernetes",
-            usage: "Container orchestration",
-          },
-        ],
-        databases: [
-          {
-            name: "PostgreSQL Version",
-            description: "Get PostgreSQL server version",
-            script: "psql --version | grep -o '[0-9]\\+\\.[0-9]\\+'",
-            category: "PostgreSQL",
-            usage: "Database management",
-          },
-          {
-            name: "MySQL Version",
-            description: "Get MySQL server version",
-            script: "mysql --version | grep -o '[0-9]\\+\\.[0-9]\\+\\.[0-9]\\+'",
-            category: "MySQL",
-            usage: "Database management",
-          },
-          {
-            name: "Redis Version",
-            description: "Get Redis server version",
-            script: "redis-server --version | grep -o '[0-9]\\+\\.[0-9]\\+\\.[0-9]\\+'",
-            category: "Redis",
-            usage: "Cache management",
-          },
-          {
-            name: "MongoDB Version",
-            description: "Get MongoDB server version",
-            script: "mongod --version | grep -o '[0-9]\\+\\.[0-9]\\+\\.[0-9]\\+'",
-            category: "MongoDB",
-            usage: "Document database",
-          },
-        ],
-        webservers: [
-          {
-            name: "Nginx Version",
-            description: "Get Nginx web server version",
-            script: "nginx -v 2>&1 | grep -o '[0-9]\\+\\.[0-9]\\+\\.[0-9]\\+'",
-            category: "Nginx",
-            usage: "Web server",
-          },
-          {
-            name: "Apache Version",
-            description: "Get Apache web server version",
-            script: "apache2 -v | grep -o '[0-9]\\+\\.[0-9]\\+\\.[0-9]\\+'",
-            category: "Apache",
-            usage: "Web server",
-          },
-          {
-            name: "HAProxy Version",
-            description: "Get HAProxy load balancer version",
-            script: "haproxy -v | grep -o '[0-9]\\+\\.[0-9]\\+\\.[0-9]\\+'",
-            category: "HAProxy",
-            usage: "Load balancer",
-          },
-        ],
-        runtimes: [
-          {
-            name: "Node.js Version",
-            description: "Get Node.js runtime version",
-            script: "node --version | grep -o '[0-9]\\+\\.[0-9]\\+\\.[0-9]\\+'",
-            category: "Node.js",
-            usage: "JavaScript runtime",
-          },
-          {
-            name: "Python Version",
-            description: "Get Python interpreter version",
-            script: "python3 --version | grep -o '[0-9]\\+\\.[0-9]\\+\\.[0-9]\\+'",
-            category: "Python",
-            usage: "Python runtime",
-          },
-          {
-            name: "Java Version",
-            description: "Get Java runtime version",
-            script: "java -version 2>&1 | grep -o '[0-9]\\+\\.[0-9]\\+\\.[0-9]\\+'",
-            category: "Java",
-            usage: "Java runtime",
-          },
-          {
-            name: "Go Version",
-            description: "Get Go compiler version",
-            script: "go version | grep -o '[0-9]\\+\\.[0-9]\\+\\.[0-9]\\+'",
-            category: "Go",
-            usage: "Go runtime",
-          },
-        ],
-        customs: [
+    
+    useEffect(() => {
+      fetchScripts();
+    }, [])
+    
+    const fetchScripts = async () => {
+      try {
+        const res = await scriptApi.getScripts();
 
-        ]
+        setLoading(false);
+        
+        setScriptCategories(res.data as ScriptCategories);
+      } catch(e) {
+        console.error(e)
       }
+    }
+
+    if(loading) return <Loading />
 
       const filteredScripts = Object.entries(scriptCategories).reduce(
         (acc: Partial<typeof scriptCategories>, [category, scripts]) => {
@@ -210,7 +121,7 @@ export default function ScriptLibrary() {
                 const scripts = filteredScripts[category as keyof typeof scriptCategories] || [];
 
                 return (
-                  <TabsContent key={category} value={category} className="space-y-4">
+                  <TabsContent key={category} value={category} className="space-y-6">
                     {scripts.length > 0 ? (
                       <div className="grid gap-4 md:grid-cols-2">
                         {scripts.map((script, index) => (
@@ -225,9 +136,7 @@ export default function ScriptLibrary() {
                               </div>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                              <div className="bg-muted p-3 rounded-md">
-                                <code className="text-sm font-mono break-all">{script.script}</code>
-                              </div>
+                              <LinuxCommand command={script.script} />
                               <div className="flex items-center justify-between">
                                 <span className="text-sm text-muted-foreground">Usage: {script.usage}</span>
                               </div>
