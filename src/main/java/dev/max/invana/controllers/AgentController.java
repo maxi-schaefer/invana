@@ -1,6 +1,7 @@
 package dev.max.invana.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import dev.max.invana.dtos.AgentUpdateDto;
 import dev.max.invana.entities.User;
 import dev.max.invana.services.FrontendNotificationService;
@@ -61,8 +62,11 @@ public class AgentController {
         Agent updated = agentRepository.save(agent);
 
         try {
-            String configJson = objectMapper.writeValueAsString(settingsService.getSettings());
-            socketHandler.sendConfigToAgent(updated.getId(), configJson);
+            ObjectNode jsonNode = objectMapper.valueToTree(settingsService.getSettings());
+            jsonNode.put("change", "config");
+
+            String json = objectMapper.writeValueAsString(jsonNode);
+            socketHandler.sendConfigToAgent(updated.getId(), json);
         } catch (Exception e) {
             e.printStackTrace();
         }

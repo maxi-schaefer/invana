@@ -224,7 +224,7 @@
                         try {
                             if(session.isOpen()) {
                                 session.sendMessage(new TextMessage(configJson));
-                                log.info("Sent config to accepted agent: " + agentId);
+                                log.info("Sent config to accepted agent: " + agentId + ", " + configJson);
                             }
                         } catch (Exception e) {
                             log.error("Error sending config to agent " + agentId);
