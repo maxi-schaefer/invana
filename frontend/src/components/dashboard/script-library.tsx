@@ -14,6 +14,11 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { isAdmin } from "@/utils/auth";
 import { useAuth } from "@/hooks/use-auth";
 import type { User } from "@/types/User";
+import { useSocket } from "@/context/SocketProvider";
+import { toast } from "sonner";
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
+import { Label } from "../ui/label";
+import { Textarea } from "../ui/textarea";
 
 type ScriptItem = {
   name: string;
@@ -31,10 +36,29 @@ export default function ScriptLibrary() {
     const [searchTerm, setSearchTerm] = useState('');
     const [scriptCategories, setScriptCategories] = useState<ScriptCategories>({});
     const [loading, setLoading] = useState(true);
-    const { user } = useAuth(); 
+    const [open, setOpen] = useState(false);
+    const [newScript, setNewScript] = useState({
+      name: "",
+      description: "",
+      script: "",
+      category: "",
+      usage: ""
+    });
+    const { user } = useAuth();
+    const { client } = useSocket();
     
     useEffect(() => {
       fetchScripts();
+
+      if(client) {
+        const subscription = client.subscribe("/topic/script-updates", (msg) => {
+          setScriptCategories(JSON.parse(msg.body) as ScriptCategories);
+        });
+
+        return () => {
+          subscription.unsubscribe();
+        }
+      }
     }, [])
     
     const fetchScripts = async () => {
@@ -47,6 +71,37 @@ export default function ScriptLibrary() {
         setScriptCategories(res.data as ScriptCategories);
       } catch(e) {
         console.error(e)
+      }
+    }
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setNewScript({ ...newScript, [e.target.name]: e.target.value });
+    }
+
+    const handleSubmit = async () => {
+      try {
+        const payload = {
+          ...newScript,
+        };
+
+        await scriptApi.addScript(payload);
+        setOpen(false);
+        setNewScript({ name: "", description: "", script: "", usage: "", category: ""});
+      } catch (error) {
+        toast.error("Failed to add script!")
+        console.error(error);
+      }
+    }
+
+    const handleDelete = async (category: string, name: string) => {
+      if(!confirm(`Are you sure you want to delete the script ${name}?`)) return;
+
+      try {
+        await scriptApi.deleteScript(category, name);
+        // fetchScripts();
+      } catch (error) {
+        console.error(error);
+        toast.error("Error deleting script.")
       }
     }
 
@@ -84,10 +139,61 @@ export default function ScriptLibrary() {
                     className="max-w-sm"
                 />
               <div className="ml-auto">
-                <Button className="font-bold">
-                  <Plus /> 
-                  Add Script
-                </Button>
+                <Dialog open={open} onOpenChange={setOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="font-bold">
+                      <Plus /> 
+                      Add Script
+                    </Button>
+                  </DialogTrigger>
+
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Add new Script</DialogTitle>
+                    </DialogHeader>
+
+                    <div className="grid gap-4 py-4">
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="grid gap-2">
+                          <Label htmlFor="name">Name</Label>
+                          <Input id="name" name="name" value={newScript.name} onChange={handleInputChange} />
+                        </div>
+                        
+                        <div className="grid gap-2">
+                          <Label htmlFor="description">Description</Label>
+                          <Input id="description" name="description" value={newScript.description} onChange={handleInputChange} />
+                        </div>
+                      </div>
+                      
+                      <div className="grid gap-2">
+                        <Label htmlFor="category">Category</Label>
+                        <Input id="category" name="category" value={newScript.category} onChange={handleInputChange} />
+                      </div>
+                      
+                      <div className="grid gap-2">
+                        <Label htmlFor="script">Script</Label>
+                        <Textarea id="script" name="script" value={newScript.script} onChange={handleInputChange} />
+                      </div>
+                      
+                      <div className="grid gap-2">
+                        <Label htmlFor="usage">Usage</Label>
+                        <Input id="usage" name="usage" value={newScript.usage} onChange={handleInputChange} />
+                      </div>
+
+
+                    </div>
+                 
+                    <DialogFooter>
+                      <DialogClose>
+                        <Button variant={"outline"}>Cancel</Button>
+                      </DialogClose>
+                      
+                      <Button onClick={handleSubmit}>Submit</Button>
+                    </DialogFooter>
+                  </DialogContent>
+
+                </Dialog>
               </div>
             </div>
 
@@ -164,7 +270,7 @@ export default function ScriptLibrary() {
                                           <>
                                             <DropdownMenuSeparator />
                                             
-                                            <DropdownMenuItem className="text-destructive">
+                                            <DropdownMenuItem className="text-destructive" onClick={() => handleDelete(script.category, script.name)}>
                                               <Trash className=" text-destructive w-4 h-4 mr-2" />
                                               Remove
                                             </DropdownMenuItem>
