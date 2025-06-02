@@ -1,4 +1,4 @@
-import { Database, Globe, Package, Plus, Puzzle, Search, Zap } from "lucide-react";
+import { Database, Globe, MoreHorizontal, Package, Plus, Puzzle, Search, Settings, Trash, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Input } from "../ui/input";
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
@@ -10,6 +10,10 @@ import { Button } from "../ui/button";
 import { scriptApi } from "@/api/impl/scriptApt";
 import Loading from "../ui/loading";
 import { LinuxCommand } from "../ui/linux-install-button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { isAdmin } from "@/utils/auth";
+import { useAuth } from "@/hooks/use-auth";
+import type { User } from "@/types/User";
 
 type ScriptItem = {
   name: string;
@@ -27,7 +31,7 @@ export default function ScriptLibrary() {
     const [searchTerm, setSearchTerm] = useState('');
     const [scriptCategories, setScriptCategories] = useState<ScriptCategories>({});
     const [loading, setLoading] = useState(true);
-
+    const { user } = useAuth(); 
     
     useEffect(() => {
       fetchScripts();
@@ -36,6 +40,7 @@ export default function ScriptLibrary() {
     const fetchScripts = async () => {
       try {
         const res = await scriptApi.getScripts();
+        console.log(res);
 
         setLoading(false);
         
@@ -139,6 +144,36 @@ export default function ScriptLibrary() {
                               <LinuxCommand command={script.script} />
                               <div className="flex items-center justify-between">
                                 <span className="text-sm text-muted-foreground">Usage: {script.usage}</span>
+                                
+                                {
+                                  category.toLowerCase() === "customs" && (
+                                    <DropdownMenu>
+                                      <DropdownMenuTrigger asChild>
+                                        <Button variant={"ghost"} size={"icon"}>
+                                          <MoreHorizontal className="w-4 h-4" />
+                                        </Button>
+                                      </DropdownMenuTrigger>
+
+                                      <DropdownMenuContent>
+                                        <DropdownMenuItem>
+                                          <Settings className="text-muted-foreground w-4 h-4 mr-2" />
+                                          Settings
+                                        </DropdownMenuItem>
+                                        
+                                        { isAdmin(user as User) &&
+                                          <>
+                                            <DropdownMenuSeparator />
+                                            
+                                            <DropdownMenuItem className="text-destructive">
+                                              <Trash className=" text-destructive w-4 h-4 mr-2" />
+                                              Remove
+                                            </DropdownMenuItem>
+                                          </>
+                                        }
+                                      </DropdownMenuContent>
+                                    </DropdownMenu>
+                                  ) 
+                                }
                               </div>
                             </CardContent>
                           </Card>

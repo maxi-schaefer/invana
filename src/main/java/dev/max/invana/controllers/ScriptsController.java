@@ -16,7 +16,7 @@ public class ScriptsController {
 
     @GetMapping
     public ScriptCategories getScripts() {
-        return scriptService.getScriptCategories();
+        return scriptService.getScripts();
     }
 
 }

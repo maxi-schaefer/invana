@@ -17,12 +17,14 @@ import type { User } from "@/types/User";
 import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 import AgentCardGrid from "../agent-view/AgentCardGrid";
 import AgentCardList from "../agent-view/AgentCardList";
+import Loading from "../ui/loading";
 
 export default function AgentInventory() {
     const [servers, setServers] = useState<ServerType[]>([]);
     const [pendingServers, setPendingServers] = useState<ServerType[]>([]);
     const [dialogOpen, setDialogOpen] = useState(false);
-    const [viewState, setViewState] = useState("columns")
+    const [viewState, setViewState] = useState("columns");
+    const [loading, setLoading] = useState(true);
     const { client } = useSocket();
     const { user } = useAuth();
 
@@ -30,16 +32,19 @@ export default function AgentInventory() {
         try {
             const res = await agentApi.getAgents();
 
+            setLoading(false);
+            
             setServers(res.data as ServerType[]);
         } catch(error) {
             console.error(error);
         }
     }
-
+    
     const fetchPendingServers = async () => {
         try {
             const res = await agentApi.getPending();
-            console.log(res);
+
+            setLoading(false);
 
             setPendingServers(res.data as ServerType[]);
         } catch (error) {
@@ -93,6 +98,7 @@ export default function AgentInventory() {
         }
     }, [client]);
 
+    if(loading) return <Loading />
 
     const updatePendingServer = (id: string, key: string, value: string) => {
         setPendingServers(prev => 

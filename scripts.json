@@ -106,5 +106,12 @@
     }
   ],
   "customs": [
+    {
+      "name": "Zenworks Version",
+      "description": "Zenworks version output",
+      "script": "cat /opt/novell/version.txt",
+      "category": "Novell",
+      "usage": "Get Zenworks version"
+    }
   ]
 }
