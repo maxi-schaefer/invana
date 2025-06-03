@@ -18,7 +18,7 @@ export default function AccountSettings() {
     const [isUpdating, setIsUpdating] = useState(false);
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
     const { user } = useAuth();
-    const [avatarPreview, setAvatarPreview] = useState<string | null>(userApi.getAvatarUrl(user as User) || null);
+    const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
     const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if(e.target.files && e.target.files[0]) {
@@ -89,12 +89,12 @@ export default function AccountSettings() {
                             <div className="flex flex-col md:flex-row gap-6 items-start">
                                 <div className="flex flex-col items-center gap-4">
                                     <Avatar className="h-24 w-24">
-                                        <AvatarImage src={avatarPreview || "deimuada"} />
+                                        <AvatarImage src={avatarPreview || userApi.getAvatarUrl(user as User)} />
                                         <AvatarFallback>{user?.fullName.at(0)}</AvatarFallback>
                                     </Avatar>
                                     <div className="flex gap-2">
                                         <Button variant={"outline"} size={"sm"} className="relative">
-                                            <Input type="file" className="absolute inset-0 opacity-0 cursor-pointer" onChange={handleAvatarChange} />
+                                            <Input type="file" className="absolute inset-0 opacity-0 cursor-pointer" accept="image/*" onChange={handleAvatarChange} />
                                             <Upload className="h-4 w-4 mr-2" />
                                             Upload
                                         </Button>
