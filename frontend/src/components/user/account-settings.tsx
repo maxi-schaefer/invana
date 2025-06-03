@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
-import { Upload, User } from "lucide-react";
+import { Upload, UserIcon } from "lucide-react";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { AvatarImage } from "@radix-ui/react-avatar";
 import { Button } from "../ui/button";
@@ -12,12 +12,13 @@ import { Badge } from "../ui/badge";
 import { Separator } from "../ui/separator";
 import { toast } from "sonner";
 import { userApi } from "@/api/impl/userApi";
+import type { User } from "@/types/User";
 
 export default function AccountSettings() {
     const [isUpdating, setIsUpdating] = useState(false);
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
     const { user } = useAuth();
-    const [avatarPreview, setAvatarPreview] = useState<string | null>(user?.avatar || null);
+    const [avatarPreview, setAvatarPreview] = useState<string | null>(userApi.getAvatarUrl(user as User) || null);
 
     const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if(e.target.files && e.target.files[0]) {
@@ -78,7 +79,7 @@ export default function AccountSettings() {
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
-                                <User className="h-5 w-5" />
+                                <UserIcon className="h-5 w-5" />
                                 Personal Information
                             </CardTitle>
                             <CardDescription>Update your personal details and profile picture</CardDescription>
