@@ -4,11 +4,11 @@ import { useAuth } from '@/hooks/use-auth';
 import { DropdownMenu, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu';
 import { Avatar, AvatarFallback } from '@radix-ui/react-avatar';
 import { AvatarImage } from '../ui/avatar';
-import DefaultAvatar from '../../assets/DefaultAvatar.svg'
 import { DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '../ui/dropdown-menu';
 import { isAdmin } from '@/utils/auth';
 import type { User } from '@/types/User';
 import { cn } from '@/lib/utils';
+import { userApi } from '@/api/impl/userApi';
 
 // Menu item variables
 const menuItems = [
@@ -84,7 +84,7 @@ export function AppSidebar({ activeSection = "dashboard", onSectionChange }: App
                             cn("flex items-center gap-2 rounded-lg p-1 hover:bg-sidebar-accent transition-colors cursor-pointer", useSidebar().open ? "ml-auto" : "-ml-3")
                         }>
                             <Avatar className='h-8 w-8'>
-                                <AvatarImage className='rounded-full' src={"https://avatars.githubusercontent.com/u/95922236?v=4"} alt={user?.fullName} />
+                                <AvatarImage className='rounded-full' src={userApi.getAvatarUrl(user as User) || ""} alt={user?.fullName} />
                                 <AvatarFallback>{user?.fullName.at(0)}</AvatarFallback>
                             </Avatar>
                         </button>
@@ -93,7 +93,7 @@ export function AppSidebar({ activeSection = "dashboard", onSectionChange }: App
                     <DropdownMenuContent align='end' className='w-56 ml-2'>
                         <div className="flex items-center gap-2 p-2">
                             <Avatar className='h-8 w-8'>
-                                <AvatarImage className='rounded-full' src={"https://avatars.githubusercontent.com/u/95922236?v=4"} alt={user?.fullName} />
+                                <AvatarImage className='rounded-full' src={userApi.getAvatarUrl(user as User) || ""} alt={user?.fullName} />
                                 <AvatarFallback>{user?.fullName.at(0)}</AvatarFallback>
                             </Avatar>
 

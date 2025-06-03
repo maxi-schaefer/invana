@@ -8,7 +8,8 @@ ENV SPRING_PROFILES_ACTIVE=prod
 WORKDIR /app
 
 # Copy jar (replace with your actual jar name)
-COPY ./target/invana-*.jar app.jar
+COPY ./invana-*.jar app.jar
+COPY ./scripts.json scripts.json
 
 # Expose the port your app runs on
 EXPOSE 8080

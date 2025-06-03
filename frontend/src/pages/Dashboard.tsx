@@ -4,7 +4,6 @@ import { useSocket } from '@/context/SocketProvider';
 import { useEffect } from 'react';
 import type ServerType from '@/types/ServerType';
 import { toast } from 'sonner';
-import { AppSidebar } from '@/components/sidebar/app-sidebar';
 
 export default function Dashboard() {
   const { connected, subscribe, send } = useSocket();

@@ -101,19 +101,5 @@
     "category" : "Go",
     "usage" : "Go runtime"
   } ],
-  "customs" : [ {
-    "id" : "7c22bc70-9bbd-44fe-89a2-47f67ee02546",
-    "name" : "a",
-    "description" : "a",
-    "script" : "a",
-    "category" : "a",
-    "usage" : "a"
-  }, {
-    "id" : "29ba08b0-5381-4eca-924f-4e3514dcbbdd",
-    "name" : "a",
-    "description" : "a",
-    "script" : "a",
-    "category" : "a",
-    "usage" : "a"
-  } ]
+  "customs" : [ ]
 }

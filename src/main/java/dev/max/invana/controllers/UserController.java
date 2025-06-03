@@ -2,20 +2,21 @@ package dev.max.invana.controllers;
 
 import dev.max.invana.dtos.RegisterUserDto;
 import dev.max.invana.entities.User;
-import dev.max.invana.services.JwtService;
+import dev.max.invana.services.FileService;
 import dev.max.invana.services.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author Max
@@ -29,7 +30,7 @@ import java.util.Objects;
 public class UserController {
 
     private final UserService userService;
-    private final JwtService jwtService;
+    private final FileService fileService;
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
@@ -37,14 +38,21 @@ public class UserController {
         return ResponseEntity.ok(userService.allUsers());
     }
 
-    @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody RegisterUserDto dto) {
+    @PostMapping(consumes = {"multipart/form-data"})
+    public ResponseEntity<User> createUser(@RequestPart("user") RegisterUserDto dto, @RequestPart(value="avatar", required = false)MultipartFile avatarFile) {
         try {
-            User user = userService.createUser(dto, User.Role.valueOf(dto.getRole().toUpperCase()));
+            String avatarFilename = fileService.saveAvatarFile(avatarFile);
+            User user = userService.createUser(dto, User.Role.valueOf(dto.getRole().toUpperCase()), avatarFilename);
             return ResponseEntity.ok(user);
         } catch (AccessDeniedException e) {
             return ResponseEntity.badRequest().body(null);
         }
+    }
+
+    @GetMapping("/avatars/{filename:.+}")
+    public ResponseEntity<Resource> getAvatar(@PathVariable String filename) {
+        String contentType = fileService.getAvatarFileContentType(filename);
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType != null ? contentType : "application/octet-stream")).body(fileService.getAvatarFile(filename));
     }
 
     @GetMapping("/me")
@@ -71,12 +79,15 @@ public class UserController {
         return ResponseEntity.badRequest().body("You are not allowed to delete this user!");
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable String id, @RequestBody User updatedUser) {
+    @PutMapping(value = "/{id}", consumes = {"multipart/form-data"})
+    public ResponseEntity<User> updateUser(@PathVariable String id, @RequestPart("user") User updatedUser, @RequestPart(value="avatar", required = false) MultipartFile avatarFile) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User authUser = (User) authentication.getPrincipal();
 
         if(authUser.getId().equalsIgnoreCase(id) || authUser.getRole().equals(User.Role.ADMIN)) {
+
+            String avatarFilename = fileService.saveAvatarFile(avatarFile);
+            updatedUser.setAvatar(avatarFilename);
             User user = userService.updateUser(id, updatedUser);
             return ResponseEntity.ok(user);
         }

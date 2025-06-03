@@ -308,7 +308,7 @@ export default function AgentSettings() {
                                     <Command className="h-5 w-5 mr-2 text-muted-foreground" />
                                     Installation Commands
                                 </div>
-                                <LinuxCommand settings={settings} />
+                                <LinuxCommand settings={settings} command="" />
                             </div>
                         </CardContent>
                     </Card>

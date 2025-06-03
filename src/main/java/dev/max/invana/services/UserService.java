@@ -78,7 +78,7 @@ public class UserService {
                 .toArray(String[]::new);
     }
 
-    public User createUser(RegisterUserDto dto, User.Role role) throws AccessDeniedException {
+    public User createUser(RegisterUserDto dto, User.Role role, String avatarFilename) throws AccessDeniedException {
         User.Role finalRole = (role == null) ? User.Role.USER : role;
 
         // Only allow admins to assign ADMIN role
@@ -91,6 +91,7 @@ public class UserService {
         user.setFullName(dto.getFullName());
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
         user.setRole(finalRole);
+        user.setAvatar(avatarFilename);
 
         return userRepo.save(user);
     }

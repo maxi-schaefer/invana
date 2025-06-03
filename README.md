@@ -26,14 +26,14 @@ in mind, Invana helps teams gain visibility into the version landscape of their 
 
 ### Quick Start (Dev Mode)
 1. Clone the repository:
-``` bash
+``` shell
 ~$ git clone https://github.com/maxi-schaefer/invana
 ~$ cd invana
 ~$ git checkout -b develop
 ```
 
 2. Start the appliance (backend + frontend):
-```bash
+```shell
 ~$ cd ./frontend
 ~$ npm install
 ~$ npm run dev
@@ -41,6 +41,26 @@ in mind, Invana helps teams gain visibility into the version landscape of their 
 
 For the backend import the project into your ide of choice and
 start `InvanaApplication`
+
+### Run in Docker container
+1. Clone the repository:
+``` shell
+~$ git clone https://github.com/maxi-schaefer/invana
+~$ cd invana
+~$ git checkout -b develop
+```
+
+2. Build with maven
+````shell
+~$ mvn clean package -DskipTests
+````
+
+3. Copy ./target/invana-v.jar to  ./invana-v.jar
+4. Start the container:
+````shell
+docker-compose up -d
+````
+
 
 ## 🤝 Contributing
 Contributions, feedback, and ideas are welcome!

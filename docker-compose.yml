@@ -2,28 +2,33 @@ version: '3.8'
 
 services:
   mysql:
-    image: mysql:8.0
+    image: mysql:8
     container_name: invana-mysql
-    ports:
-      - "3307:3306"
+    restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: secret
       MYSQL_DATABASE: invana
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "3306:3306"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - invana-mysql-data:/var/lib/mysql
 
   app:
     build: .
     container_name: invana-app
-    depends_on:
-      - mysql
+    restart: always
     ports:
       - "8080:8080"
+    depends_on:
+      - mysql
     environment:
-      LOGGING_FILE_PATH: /var/log/invana
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/invana?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: secret
+      SPRING_DATASOURCE_PASSWORD: rootpassword
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_OPEN_IN_VIEW: false
+      LOGGING_FILE_PATH: /var/log/invana
+      UPLOAD_DIR: /app/uploads
       INVANA_DEFAULTADMINEMAIL: admin@example.com
       INVANA_DEFAULTADMINPASSWORD: password
       INVANA_DEFAULT_AGENT_TOKEN: invana_agent_token_default
@@ -32,10 +37,13 @@ services:
       INVANA_DEFAULT_AGENT_RETRIES: 3
       INVANA_DEFAULT_AGENT_TIMEOUT: 30
       INVANA_DEFAULT_AGENT_LOGGING: false
-      INVANA_DEFAULT_SERVER_URL: https://localhost
-      INVANA_DEFAULT_SERVER_PORT: 8080
+      INVANA_SERVER_URL: https://localhost
+      INVANA_SERVER_PORT: 8080
       SECURITY_JWT_SECRET_KEY: 645c2b17e35041ebd6f2e0b32494957bb255c8482349f449d2230609a36c184d
       SECURITY_JWT_EXPIRATION_TIME: 3600000
+    volumes:
+      - invana-upload-data:/app/uploads
 
 volumes:
-  mysql_data:
+  invana-mysql-data:
+  invana-upload-data:

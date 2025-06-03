@@ -10,11 +10,10 @@ import { Label } from "../ui/label";
 import { useAuth } from "@/hooks/use-auth";
 import { Badge } from "../ui/badge";
 import { Separator } from "../ui/separator";
+import { toast } from "sonner";
+import { userApi } from "@/api/impl/userApi";
 
 export default function AccountSettings() {
-    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-    const [showNewPassword, setShowNewPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
@@ -28,12 +27,27 @@ export default function AccountSettings() {
         }
     }
 
-    const handleSaveProfile = () => {
+    const handleSaveProfile = async () => {
         setIsUpdating(true);
 
-        
+        try {
+            const formData = new FormData();
+            const userJson = {
+                "name": "Max Schäfer"
+            };
 
-        setTimeout(() => setIsUpdating(false), 3000);
+            formData.append("user", new Blob([JSON.stringify(userJson)], { type: "application/json" }));
+            formData.append("avatar", avatarFile || "");
+
+            const res = await userApi.updateUser(user?.id || "", formData);
+            console.log(res);
+            
+        } catch (error) {
+            toast.error("Error whilst updating user!")
+            console.error(error);
+        }
+        
+        setIsUpdating(false);
     }
 
     const formatDate = (dateString: string) => {

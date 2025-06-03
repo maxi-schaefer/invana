@@ -7,4 +7,5 @@ export interface User {
   role: UserRole;
   createdAt: string;
   updatedAt: string;
+  avatar?: string;
 }

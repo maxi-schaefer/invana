@@ -46,6 +46,19 @@ public class ScriptsController {
             }
 
             socketHandler.notifyUpdate(scriptService.getScripts());
+
+            List<Agent> agents = agentRepository.findAll().stream().filter(a -> a.getStatus() != AgentStatus.PENDING).toList();
+            for(Agent agent : agents) {
+                ScriptCategories scripts = scriptService.getScripts();
+
+                ObjectNode root = mapper.createObjectNode();
+                root.put("change", "script");
+                root.set("payload", mapper.valueToTree(scripts));
+
+                String json = mapper.writeValueAsString(root);
+                agentWebSocketHandler.sendToAgent(agent, json);
+            }
+
             return ResponseEntity.ok("Custom script deleted successfully");
         } catch (IOException e) {
             return ResponseEntity.status(500).body("Failed to delete custom script");
@@ -62,6 +75,19 @@ public class ScriptsController {
 
             scriptService.addScriptToCategory(newScript);
             socketHandler.notifyUpdate(scriptService.getScripts());
+
+            List<Agent> agents = agentRepository.findAll().stream().filter(a -> a.getStatus() != AgentStatus.PENDING).toList();
+            for(Agent agent : agents) {
+                ScriptCategories scripts = scriptService.getScripts();
+
+                ObjectNode root = mapper.createObjectNode();
+                root.put("change", "script");
+                root.set("payload", mapper.valueToTree(scripts));
+
+                String json = mapper.writeValueAsString(root);
+                agentWebSocketHandler.sendToAgent(agent, json);
+            }
+
 
             return ResponseEntity.ok("Script added successfully");
         } catch (IllegalArgumentException e) {
