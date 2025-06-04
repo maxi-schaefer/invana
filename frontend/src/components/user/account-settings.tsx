@@ -24,8 +24,8 @@ export default function AccountSettings() {
         email: user?.email,
     });
 
-    const handleInputChange = (key: string, value: string) => {
-        setUserJson({ ...userJson, [key]: value })
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setUserJson({ ...userJson, [e.target.name]: e.target.value });
     }
 
     const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -117,12 +117,12 @@ export default function AccountSettings() {
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                             <Label htmlFor="fullName">Full Name</Label>
-                                            <Input id="fullName" defaultValue={user?.fullName} onChange={(e) => handleInputChange("fullName", e.target.value)} />
+                                            <Input id="fullName" name="fullName" defaultValue={user?.fullName} onChange={handleInputChange} />
                                         </div>
                                 
                                         <div className="space-y-2">
                                             <Label htmlFor="email">Email</Label>
-                                            <Input id="email" type="email" defaultValue={user?.email} onChange={(e) => handleInputChange("email", e.target.value)} />
+                                            <Input id="email" type="email" name="email" defaultValue={user?.email} onChange={handleInputChange} />
                                         </div>
                                     </div>
 

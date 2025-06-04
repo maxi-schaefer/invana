@@ -24,7 +24,7 @@ type ScriptItem = {
   id?: string;
   name: string;
   description: string;
-  script: string;
+  command: string;
   category: string;
   usage: string;
 };
@@ -41,7 +41,7 @@ export default function ScriptLibrary() {
     const [newScript, setNewScript] = useState({
       name: "",
       description: "",
-      script: "",
+      command: "",
       category: "",
       usage: ""
     });
@@ -87,7 +87,7 @@ export default function ScriptLibrary() {
 
         await scriptApi.addScript(payload);
         setOpen(false);
-        setNewScript({ name: "", description: "", script: "", usage: "", category: ""});
+        setNewScript({ name: "", description: "", command: "", usage: "", category: ""});
       } catch (error) {
         toast.error("Failed to add script!")
         console.error(error);
@@ -139,6 +139,7 @@ export default function ScriptLibrary() {
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="max-w-sm"
                 />
+
               <div className="ml-auto">
                 <Dialog open={open} onOpenChange={setOpen}>
                   <DialogTrigger asChild>
@@ -173,16 +174,14 @@ export default function ScriptLibrary() {
                       </div>
                       
                       <div className="grid gap-2">
-                        <Label htmlFor="script">Script</Label>
-                        <Textarea id="script" name="script" value={newScript.script} onChange={handleInputChange} />
+                        <Label htmlFor="command">Command</Label>
+                        <Textarea id="command" name="command" value={newScript.command} onChange={handleInputChange} />
                       </div>
                       
                       <div className="grid gap-2">
                         <Label htmlFor="usage">Usage</Label>
                         <Input id="usage" name="usage" value={newScript.usage} onChange={handleInputChange} />
                       </div>
-
-
                     </div>
                  
                     <DialogFooter>
@@ -248,7 +247,7 @@ export default function ScriptLibrary() {
                               </div>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                              <LinuxCommand command={script.script} />
+                              <LinuxCommand command={script.command} />
                               <div className="flex items-center justify-between">
                                 <span className="text-sm text-muted-foreground">Usage: {script.usage}</span>
                                 
