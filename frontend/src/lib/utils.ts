@@ -14,7 +14,7 @@ export function getBadgeStyle(status: string): string {
     case "outdated":
       return "capitalize bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400"
     case "error":
-      return "capitalize sbg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400"
+      return "capitalize bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400"
 
     // Environment status badge
     case "production":

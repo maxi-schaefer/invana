@@ -8,6 +8,7 @@ type AuthContextType = {
     isAuthenticated: boolean;
     token: string | null;
     user: User | null;
+    setUser: (user: User) => void;
     login: (token: string, user: User) => void;
     logout: () => void;
     loading: boolean;
@@ -27,6 +28,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             const token = getToken();
             if(!token) {
                 setLoading(false);
+                logout();
                 return;
             }
     
@@ -72,7 +74,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         token,
         login,
         logout,
-        loading
+        loading,
+        setUser
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

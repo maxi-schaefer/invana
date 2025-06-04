@@ -89,6 +89,10 @@ public class UserController {
             String avatarFilename = fileService.saveAvatarFile(avatarFile);
             updatedUser.setAvatar(avatarFilename);
             User user = userService.updateUser(id, updatedUser);
+
+            System.out.println("Received user: " + updatedUser.getFullName());
+            System.out.println("Received file: " + (avatarFile != null ? avatarFile.getOriginalFilename() : "null"));
+
             return ResponseEntity.ok(user);
         }
 

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import React, { useState } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { Upload, UserIcon } from "lucide-react";
@@ -17,8 +17,16 @@ import type { User } from "@/types/User";
 export default function AccountSettings() {
     const [isUpdating, setIsUpdating] = useState(false);
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
-    const { user } = useAuth();
+    const { user, setUser, logout } = useAuth();
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+    const [userJson, setUserJson] = useState({
+        fullName: user?.fullName,
+        email: user?.email,
+    });
+
+    const handleInputChange = (key: string, value: string) => {
+        setUserJson({ ...userJson, [key]: value })
+    }
 
     const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if(e.target.files && e.target.files[0]) {
@@ -33,16 +41,19 @@ export default function AccountSettings() {
 
         try {
             const formData = new FormData();
-            const userJson = {
-                "fullName": "Max Schäfer"
-            };
 
             formData.append("user", new Blob([JSON.stringify(userJson)], { type: "application/json" }));
             formData.append("avatar", avatarFile || "");
-
-            const res = await userApi.updateUser(user?.id || "", formData);
-            console.log(res);
             
+            const res = await userApi.updateUser(user?.id, formData);
+            setUser(res.data as any);         
+            
+            if(userJson.email !== user?.email) {
+                toast.success("Successfully updated user, you need to reauthenticate!");
+                logout();
+            } else {
+                toast.success("Successfully updated user!");
+            }
         } catch (error) {
             toast.error("Error whilst updating user!")
             console.error(error);
@@ -105,13 +116,13 @@ export default function AccountSettings() {
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-2">
-                                            <Label htmlFor="full-name">Full Name</Label>
-                                            <Input id="full-name" defaultValue={user?.fullName} />
+                                            <Label htmlFor="fullName">Full Name</Label>
+                                            <Input id="fullName" defaultValue={user?.fullName} onChange={(e) => handleInputChange("fullName", e.target.value)} />
                                         </div>
                                 
                                         <div className="space-y-2">
                                             <Label htmlFor="email">Email</Label>
-                                            <Input id="email" type="email" defaultValue={user?.email} />
+                                            <Input id="email" type="email" defaultValue={user?.email} onChange={(e) => handleInputChange("email", e.target.value)} />
                                         </div>
                                     </div>
 
