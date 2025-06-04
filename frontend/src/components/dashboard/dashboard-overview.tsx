@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { Badge } from '../ui/badge'
 import { getBadgeStyle } from '@/lib/utils'
 import { Button } from '../ui/button'
+import DashboardHeader from './dashboard-header'
 
 export default function DashboardOverview() {
 
@@ -89,10 +90,7 @@ export default function DashboardOverview() {
     <div className="space-y-6">
 
       {/* Header */}
-      <div className='flex items-start flex-col'>
-        <h1 className="text-3xl font-bold tracking-tight text-primary">Inventory Dashboard</h1>
-        <p className="text-muted-foreground">Monitor service versions across your infrastructure</p>
-      </div>
+      <DashboardHeader title='Inventory Dashboard' description='Monitor service versions across your infrastructure' />
 
       {/* Stat Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

@@ -4,6 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Button } from "../ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
 import { Badge } from "../ui/badge"
+import DashboardHeader from "./dashboard-header"
 
 export default function VersionHistory() {
     // Mockup data
@@ -98,6 +99,7 @@ export default function VersionHistory() {
                 <h1 className="text-3xl text-primary font-bold tracking-tight">Version History</h1>
                 <p className="text-muted-foreground">Track version changes across your services.</p>
             </div>
+            <DashboardHeader title="Version History" description="Track version changes across your services." />
 
             <div className="flex items-center gap-4">
                 <div className="flex items-center space-x-2 flex-1">

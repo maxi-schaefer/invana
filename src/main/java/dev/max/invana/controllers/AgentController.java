@@ -14,6 +14,7 @@ import dev.max.invana.services.AgentSettingsService;
 import dev.max.invana.sockets.FrontendWebSocketHandler;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +34,7 @@ public class AgentController {
     private final FrontendNotificationService frontendNotificationService;
     private final ObjectMapper objectMapper;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     @PostMapping("/{id}/deny")
     public void denyAgent(@PathVariable String id) {
@@ -40,6 +42,7 @@ public class AgentController {
         agentRepository.deleteById(id);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public void updateAgent(@PathVariable String id, @RequestBody Agent body) {
         Agent agent = agentRepository.findById(id).orElseThrow(() -> new RuntimeException("Agent not found"));
@@ -51,6 +54,7 @@ public class AgentController {
         frontendNotificationService.sendAgentUpdate(updated);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{id}/accept")
     public Agent acceptAgent(@PathVariable String id, @RequestBody AgentAcceptDto body) {
         Agent agent = agentRepository.findById(id).orElseThrow(() -> new RuntimeException("Agent not found"));
@@ -74,6 +78,7 @@ public class AgentController {
         return updated;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/pending")
     public List<Agent> getPendingAgents() {
         return agentRepository.findAll().stream().filter(a -> a.getStatus() == AgentStatus.PENDING).toList();

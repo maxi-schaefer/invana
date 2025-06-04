@@ -13,16 +13,19 @@ import { Separator } from "../ui/separator";
 import { toast } from "sonner";
 import { userApi } from "@/api/impl/userApi";
 import type { User } from "@/types/User";
+import PasswordInput from "../ui/password-input";
 
 export default function AccountSettings() {
     const [isUpdating, setIsUpdating] = useState(false);
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
     const { user, setUser, logout } = useAuth();
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
-    const [userJson, setUserJson] = useState({
+    const [userJson, setUserJson] = useState<{ fullName?: string, email?: string }>({
         fullName: user?.fullName,
         email: user?.email,
     });
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       setUserJson({ ...userJson, [e.target.name]: e.target.value });
@@ -44,9 +47,16 @@ export default function AccountSettings() {
 
             formData.append("user", new Blob([JSON.stringify(userJson)], { type: "application/json" }));
             formData.append("avatar", avatarFile || "");
+
+            if(password && password !== confirmPassword) {
+                setIsUpdating(false);
+                return toast.error("Passwords don't match!");
+            } else {
+                await userApi.updatePassword(user?.id, { newPassword: password });
+            }
             
             const res = await userApi.updateUser(user?.id, formData);
-            setUser(res.data as any);         
+            setUser(res.data as any);
             
             if(userJson.email !== user?.email) {
                 toast.success("Successfully updated user, you need to reauthenticate!");
@@ -78,9 +88,8 @@ export default function AccountSettings() {
             </div>
 
             <Tabs defaultValue="profile" className="w-full">
-                <TabsList className="grid w-full grid-cols-4">
+                <TabsList className="grid w-full grid-cols-3">
                     <TabsTrigger value="profile">Profile</TabsTrigger>
-                    <TabsTrigger value="security">Security</TabsTrigger>
                     <TabsTrigger value="notifications">Notifications</TabsTrigger>
                     <TabsTrigger value="preferences">Preferences</TabsTrigger>
                 </TabsList>
@@ -145,6 +154,19 @@ export default function AccountSettings() {
                                         <Label htmlFor="user-joined">Member since</Label>
                                         <Input id="user-joined" defaultValue={formatDate(user?.createdAt || "0")} disabled className="bg-muted" />
                                     </div>
+
+                                    <Separator />
+
+                                    <div className="space-y-2">
+                                        <Label htmlFor="password">New Password</Label>
+                                        <PasswordInput password={password || ""} name="password" id="password" onChange={(e) => setPassword(e.target.value)} />
+                                    </div>
+                                    
+                                    <div className="space-y-2">
+                                        <Label>Confirm Password</Label>
+                                        <PasswordInput password={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+                                    </div>
+
                                 </div>
                             </div>
 

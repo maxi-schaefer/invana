@@ -17,6 +17,7 @@ import { agentSettingsApi } from "@/api/impl/agentSettings";
 import Loading from "../ui/loading";
 import ServerUrlInput from "../ui/server-url-input";
 import { LinuxCommand } from "../ui/linux-command";
+import DashboardHeader from "./dashboard-header";
 
 export default function AgentSettings() {
     const [showToken, setShowToken] = useState(false);
@@ -91,10 +92,7 @@ export default function AgentSettings() {
 
     return (
         <div className="space-y-6">
-            <div>
-                <h1 className="text-3xl font-bold tracking-tight text-primary">Agent Settings</h1>
-                <p className="text-muted-foreground">Configure and manage Ivana agents across your infrastructure</p>
-            </div>
+            <DashboardHeader title="Agent Settings" description="Configure and manage Ivana agents across your infrastructure" />
 
             <Tabs defaultValue="configuration" className="w-full">
                 <TabsList className="grid w-full grid-cols-2">

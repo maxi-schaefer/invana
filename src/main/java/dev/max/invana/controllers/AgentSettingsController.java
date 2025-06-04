@@ -11,6 +11,7 @@ import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,6 +24,7 @@ public class AgentSettingsController {
     private AgentWebSocketHandler socketHandler;
     private ObjectMapper objectMapper;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<?> updateSettings(@RequestBody AgentSettings settings) {
         AgentSettings updated = service.saveSettings(settings);
@@ -46,6 +48,7 @@ public class AgentSettingsController {
         return ResponseEntity.ok(res);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public AgentSettings get() {
         return service.getSettings();

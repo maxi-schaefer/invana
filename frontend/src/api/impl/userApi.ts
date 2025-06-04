@@ -13,5 +13,6 @@ export const userApi = {
             "Authorization": `Bearer ${getToken()}`
         }
     }),
+    updatePassword: (id: string | undefined, params: any) => axiosClient.put(`users/${id}/password`, params),
     getAvatarUrl: (user: User) => `${baseUrl}users/avatars/${user.avatar}`,
 } 

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from 'react'
-import { Database, Eye, EyeOff, Lock, Mail } from 'lucide-react';
+import { Database, Lock, Mail } from 'lucide-react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { authApi } from '@/api/impl/authApit';
 import { useAuth } from '@/hooks/use-auth';
@@ -13,11 +13,11 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import Loading from '@/components/ui/loading';
 import { toast } from 'sonner';
+import PasswordInput from '@/components/ui/password-input';
 
 export default function Login() {
     const navigate = useNavigate();
     const { login } = useAuth();
-    const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [rememberMe, setRememberMe] = useState(false);
@@ -85,30 +85,7 @@ export default function Login() {
                             
                             <div className="space-y-2">
                                 <Label htmlFor="password"><Lock className='h-4 w-4 text-muted-foreground' /> Password</Label>
-                                <div className="relative">
-                                    <Input
-                                        id="password"
-                                        type={showPassword ? "text" : "password"}
-                                        placeholder="Enter your password"
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        required
-                                        className="h-11 pr-10"
-                                    />
-                                    <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="sm"
-                                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                    >
-                                        {showPassword ? (
-                                        <EyeOff className="h-4 w-4 text-muted-foreground" />
-                                        ) : (
-                                        <Eye className="h-4 w-4 text-muted-foreground" />
-                                        )}
-                                    </Button>
-                                </div>
+                                <PasswordInput password={password} onChange={(e) => setPassword(e.target.value)} id='password' />
                             </div>
 
                             <div className="flex items-center justify-between">

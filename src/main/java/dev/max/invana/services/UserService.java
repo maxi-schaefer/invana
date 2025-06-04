@@ -64,6 +64,17 @@ public class UserService {
         }
     }
 
+    public void updatePassword(String userId, String newPassword) {
+        Optional<User> optionalUser = userRepo.findById(userId);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userRepo.save(user);
+        } else {
+            throw new RuntimeException("User not found with id: " + userId);
+        }
+    }
+
     private String[] getNullPropertyNames(User source) {
         // Use BeanUtils or any utility to get null property names
         return Arrays.stream(BeanUtils.getPropertyDescriptors(User.class))

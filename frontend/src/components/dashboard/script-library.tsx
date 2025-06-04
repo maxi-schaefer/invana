@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
+import DashboardHeader from "./dashboard-header";
 
 type ScriptItem = {
   id?: string;
@@ -60,7 +61,7 @@ export default function ScriptLibrary() {
           subscription.unsubscribe();
         }
       }
-    }, [])
+    }, [client])
     
     const fetchScripts = async () => {
       try {
@@ -126,10 +127,7 @@ export default function ScriptLibrary() {
 
       return (
         <div className="space-y-6">
-            <div>
-                <h1 className="text-3xl font-bold tracking-tight text-primary">Script Library</h1>
-                <p className="text-muted-foreground">Predefined scripts from the community for common service version checks</p>
-            </div>
+            <DashboardHeader title="Script Library" description="Predefined scripts from the community for common service version checks" />
 
             <div className="flex items-center space-x-2">
                 <Search className="h-4 w-4 text-muted-foreground" />

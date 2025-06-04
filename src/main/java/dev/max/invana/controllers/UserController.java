@@ -1,6 +1,7 @@
 package dev.max.invana.controllers;
 
 import dev.max.invana.dtos.RegisterUserDto;
+import dev.max.invana.dtos.UpdatePasswordDto;
 import dev.max.invana.entities.User;
 import dev.max.invana.services.FileService;
 import dev.max.invana.services.UserService;
@@ -38,6 +39,7 @@ public class UserController {
         return ResponseEntity.ok(userService.allUsers());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(consumes = {"multipart/form-data"})
     public ResponseEntity<User> createUser(@RequestPart("user") RegisterUserDto dto, @RequestPart(value="avatar", required = false)MultipartFile avatarFile) {
         try {
@@ -54,6 +56,20 @@ public class UserController {
         String contentType = fileService.getAvatarFileContentType(filename);
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType != null ? contentType : "application/octet-stream")).body(fileService.getAvatarFile(filename));
     }
+
+    @PutMapping("/{id}/password")
+    public ResponseEntity<String> updatePassword(@PathVariable String id, @RequestBody UpdatePasswordDto request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User authUser = (User) authentication.getPrincipal();
+
+        if (authUser.getId().equalsIgnoreCase(id) || authUser.getRole() == User.Role.ADMIN) {
+            userService.updatePassword(id, request.getNewPassword());
+            return ResponseEntity.ok("Password updated successfully.");
+        }
+
+        return ResponseEntity.status(403).body("Not authorized to update this user's password.");
+    }
+
 
     @GetMapping("/me")
     public ResponseEntity<User> authenticatedUser() {
@@ -90,7 +106,7 @@ public class UserController {
             updatedUser.setAvatar(avatarFilename);
             User user = userService.updateUser(id, updatedUser);
 
-            System.out.println("Received user: " + updatedUser.getFullName());
+            System.out.println("Received user: " + updatedUser.getFullName() + ":" + updatedUser.getPassword());
             System.out.println("Received file: " + (avatarFile != null ? avatarFile.getOriginalFilename() : "null"));
 
             return ResponseEntity.ok(user);

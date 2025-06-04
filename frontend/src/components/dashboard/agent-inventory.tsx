@@ -17,6 +17,7 @@ import AgentCardGrid from "../agent-view/AgentCardGrid";
 import AgentCardList from "../agent-view/AgentCardList";
 import Loading from "../ui/loading";
 import AgentEnvironmentSelect from "../agent-view/AgentEnvironmentSelect";
+import DashboardHeader from "./dashboard-header";
 
 export default function AgentInventory() {
     const [servers, setServers] = useState<ServerType[]>([]);
@@ -146,10 +147,7 @@ export default function AgentInventory() {
         <div className="space-y-6">
 
             <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight text-primary">Agent Inventory</h1>
-                    <p className="text-muted-foreground">Manage servers in your infrastructure</p>
-                </div>
+                <DashboardHeader title="Agent Inventory" description="Manage servers in your infrastructure" />
 
                 <div className="flex gap-4">
 
