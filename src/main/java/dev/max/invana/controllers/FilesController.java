@@ -21,9 +21,9 @@ public class FilesController {
 
         String installScript = """
             #!/bin/bash
-
+            
             set -e
-
+            
             # === Parse CLI arguments ===
             for arg in "$@"; do
               case $arg in
@@ -40,59 +40,74 @@ public class FilesController {
                   shift
                   ;;
                 *)
-                  echo "Unknown argument: $arg"
+                  echo "  [✗] Unknown argument: $arg"
                   exit 1
                   ;;
               esac
             done
-
+            
+            # === Validate required arguments ===
             if [ -z "$TOKEN" ]; then
-              echo "Usage: install.sh --token=<YOUR_AGENT_TOKEN> [--serverUrl=<URL>] [--serverPort=<PORT>]"
+              echo "  [✗] Missing required argument: --token"
+              echo "  [i] Usage: install.sh --token=<YOUR_AGENT_TOKEN> [--serverUrl=<URL>] [--serverPort=<PORT>]"
               exit 1
             fi
-
+            
+            # === Variables ===
             INSTALL_DIR="/opt/invana-agent"
             ZIP_URL="%s:%d/invana-agent.zip"
             CONFIG_FILE="$INSTALL_DIR/config.json"
             PYTHON_BIN=$(which python3 || true)
-
-            echo ">> Installing invana Agent..."
-
+            
+            echo "  [✓] Starting invana Agent installation"
+            
+            # === Ensure Python 3 is installed ===
             if [ -z "$PYTHON_BIN" ]; then
-              echo ">> Installing Python 3..."
+              echo "  [i] Python 3 not found, installing..."
               apt-get update
               apt-get install -y python3 python3-pip
               PYTHON_BIN=$(which python3)
+              echo "  [✓] Python 3 installed"
+            else
+              echo "  [✓] Python 3 found: $PYTHON_BIN"
             fi
-
-            echo ">> Creating installation directory at $INSTALL_DIR"
+            
+            # === Create install directory ===
+            echo "  [i] Preparing installation directory..."
             rm -rf "$INSTALL_DIR"
             mkdir -p "$INSTALL_DIR"
-
-            echo ">> Downloading agent from $ZIP_URL"
+            echo "  [✓] Installation directory ready at $INSTALL_DIR"
+            
+            # === Download and extract agent ===
+            echo "  [i] Downloading invana Agent from $ZIP_URL"
             curl -sSL "$ZIP_URL" -o /tmp/invana-agent.zip
-
+            
             if ! file /tmp/invana-agent.zip | grep -q 'Zip archive data'; then
-              echo ">> ERROR: Downloaded file is not a valid zip archive."
+              echo "  [✗] Downloaded file is not a valid zip archive."
               exit 1
             fi
-
-            echo ">> Extracting agent..."
+            echo "  [✓] Agent archive downloaded"
+            
+            echo "  [i] Extracting agent files..."
             unzip -q /tmp/invana-agent.zip -d "$INSTALL_DIR"
             rm /tmp/invana-agent.zip
-
-            echo ">> Creating Python virtual environment..."
+            echo "  [✓] Agent files extracted"
+            
+            # === Install Python dependencies ===
+            echo "  [i] Setting up Python virtual environment..."
             python3 -m venv "$INSTALL_DIR/venv"
-
-            echo ">> Activating virtual environment..."
+            echo "  [✓] Virtual environment created"
+            
+            echo "  [i] Activating virtual environment..."
             source "$INSTALL_DIR/venv/bin/activate"
-
-            echo ">> Installing Python dependencies..."
-            "$INSTALL_DIR/venv/bin/pip" install --upgrade pip
-            "$INSTALL_DIR/venv/bin/pip" install -r "$INSTALL_DIR/requirements.txt"
-
-            echo ">> Writing configuration to config.json"
-
+            
+            echo "  [i] Installing dependencies..."
+            "$INSTALL_DIR/venv/bin/pip" install --upgrade pip > /dev/null
+            "$INSTALL_DIR/venv/bin/pip" install -r "$INSTALL_DIR/requirements.txt" > /dev/null
+            echo "  [✓] Dependencies installed"
+            
+            # === Write config.json ===
+            echo "  [i] Writing configuration to $CONFIG_FILE"
             cat <<EOF > "$CONFIG_FILE"
             {
               "token": "$TOKEN",
@@ -100,32 +115,34 @@ public class FilesController {
               "serverPort": "${SERVER_PORT:-8080}"
             }
             EOF
-
-            echo ">> Setting up systemd service..."
+            echo "  [✓] Configuration written"
+            
+            # === Set up systemd service ===
+            echo "  [i] Setting up systemd service for invana Agent..."
             cat <<EOF > /etc/systemd/system/invana-agent.service
             [Unit]
             Description=invana Agent
             After=network.target
-
+            
             [Service]
-            ExecStartPre=/bin/bash -c 'until [ -f /opt/invana-agent/config.json ]; do echo "Waiting for config.json..."; sleep 1; done'
-            ExecStart=/opt/invana-agent/venv/bin/python /opt/invana-agent/agent.py
-            WorkingDirectory=/opt/invana-agent
+            ExecStart=$INSTALL_DIR/venv/bin/python $INSTALL_DIR/agent.py
+            WorkingDirectory=$INSTALL_DIR
             Restart=always
             User=root
-
+            
             [Install]
             WantedBy=multi-user.target
             EOF
-
+            
             systemctl daemon-reexec
             systemctl daemon-reload
-            systemctl enable invana-agent
-            echo ">> Waiting 2 seconds before starting service..."
-            sleep 2
+            systemctl enable invana-agent > /dev/null
             systemctl start invana-agent
-
-            echo ">> invana Agent installed successfully."
+            echo "  [✓] Systemd service installed and started"
+            
+            echo ""
+            echo "  [✓] invana Agent installation complete!"
+            echo "  [i] To check service status: systemctl status invana-agent"
             """.formatted(serverUrl, serverPort);
 
         return ResponseEntity.ok(installScript);

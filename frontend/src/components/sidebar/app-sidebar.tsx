@@ -129,8 +129,8 @@ export function AppSidebar({ activeSection = "dashboard", onSectionChange }: App
                             {
                                 menuItems.map((item) => (
                                     <SidebarMenuItem className={item.admin && !isAdmin(user as User) ? "hidden" : "block" } key={item.id}>
-                                        <SidebarMenuButton tooltip={item.title} className={`${activeSection === item.id ? "border-l-2 border-primary" : "border-l-2 border-transparent"}`} isActive={activeSection === item.id} onClick={() => onSectionChange?.(item.id)}>
-                                            <item.icon className='h-4 w-4' />
+                                        <SidebarMenuButton tooltip={item.title} className={`${activeSection === item.id ? "border-l-2 border-primary text-primary" : "border-l-2 border-transparent text-muted-foreground"}`} isActive={activeSection === item.id} onClick={() => onSectionChange?.(item.id)}>
+                                            <item.icon className='h-4 w-4 text-muted-foreground' />
                                             <span>{item.title}</span>
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>
