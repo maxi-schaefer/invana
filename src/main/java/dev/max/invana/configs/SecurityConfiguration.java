@@ -1,5 +1,6 @@
 package dev.max.invana.configs;
 
+import dev.max.invana.repositories.UserRepository;
 import dev.max.invana.services.JwtService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,7 @@ public class SecurityConfiguration {
 
     private final HandlerExceptionResolver handlerExceptionResolver;
     private final JwtService jwtService;
-    private final UserDetailsService userDetailsService;
+    private final UserRepository userRepository;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
@@ -57,7 +58,7 @@ public class SecurityConfiguration {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(handlerExceptionResolver, jwtService, userDetailsService);
+        return new JwtAuthenticationFilter(handlerExceptionResolver, jwtService, userRepository);
     }
 
     @Bean

@@ -18,7 +18,7 @@ import PasswordInput from "../ui/password-input";
 export default function AccountSettings() {
     const [isUpdating, setIsUpdating] = useState(false);
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
-    const { user, setUser, logout } = useAuth();
+    const { user, setUser } = useAuth();
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
     const [userJson, setUserJson] = useState<{ fullName?: string, email?: string }>({
         fullName: user?.fullName,
@@ -57,13 +57,12 @@ export default function AccountSettings() {
             
             const res = await userApi.updateUser(user?.id, formData);
             setUser(res.data as any);
-            
-            if(userJson.email !== user?.email) {
-                toast.success("Successfully updated user, you need to reauthenticate!");
-                logout();
-            } else {
-                toast.success("Successfully updated user!");
-            }
+
+            // Reset Password fields
+            setPassword("");
+            setConfirmPassword("");
+
+            toast.success("Successfully updated user!");
         } catch (error) {
             toast.error("Error whilst updating user!")
             console.error(error);

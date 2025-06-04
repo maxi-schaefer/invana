@@ -17,6 +17,7 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -37,7 +38,7 @@ public class JwtService {
 
     private UserRepository userRepository;
 
-    public String extractUsername(String token) {
+    public String extractUserId(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
@@ -46,19 +47,19 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+    public String generateToken(User user) {
+        return generateToken(new HashMap<>(), user);
     }
 
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return buildToken(extraClaims, userDetails, jwtExpiration);
+    public String generateToken(Map<String, Object> extraClaims, User user) {
+        return buildToken(extraClaims, user, jwtExpiration);
     }
 
-    private String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long expiration) {
+    private String buildToken(Map<String, Object> extraClaims, User user, long expiration) {
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername())
+                .setSubject(String.valueOf(user.getId()))
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
@@ -66,14 +67,19 @@ public class JwtService {
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        try {
+            String userIdStr = extractUserId(token);
+            Optional<User> userOpt = userRepository.findById(userIdStr);
+            return userOpt.isPresent() && !isTokenExpired(token);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public boolean isTokenValid(String token) {
         try {
-            String username = extractUsername(token);
-            if (username == null || username.isEmpty()) return false;
+            String userId = extractUserId(token);
+            if (userId == null || userId.isEmpty()) return false;
 
             return !isTokenExpired(token);
         } catch (Exception e) {
