@@ -54,10 +54,11 @@ export default function Login() {
         <div
             className="flex items-center justify-center"
         >
+            <DottedBackground />
+            
             <div className="absolute top-4 right-4">
                 <ModeToggle />
             </div>
-            <DottedBackground />
 
             <div className="relative flex flex-col h-screen items-center justify-center">
                 {/* Company logo and name */}

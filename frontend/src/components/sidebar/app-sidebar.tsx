@@ -2,8 +2,7 @@ import { Activity, Database, History, Home, Library, LogOut, LucideFileCog, Pack
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '../ui/sidebar';
 import { useAuth } from '@/hooks/use-auth';
 import { DropdownMenu, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu';
-import { Avatar, AvatarFallback } from '@radix-ui/react-avatar';
-import { AvatarImage } from '../ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '../ui/dropdown-menu';
 import { isAdmin } from '@/utils/auth';
 import type { User } from '@/types/User';

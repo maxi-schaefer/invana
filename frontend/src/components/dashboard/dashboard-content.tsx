@@ -14,6 +14,7 @@ import { version } from "../../../package.json"
 import { Github } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { Kbd } from '../command-menu/kbd';
+import DottedBackground from '../ui/dotted-background';
 
 export default function DashboardContent() {
     const [activeSection, setActiveSection] = React.useState<string>('dashboard');
@@ -41,8 +42,8 @@ export default function DashboardContent() {
         <>
             <AppSidebar activeSection={activeSection} onSectionChange={setActiveSection} />
             <SidebarInset>
-              
-                <header className="flex h-16 shrink-0 items-center gap-2 px-4 border-b">
+                <DottedBackground zIndex="1" />
+                <header className="flex h-16 shrink-0 items-center gap-2 px-4 border-b z-20">
                     <SidebarTrigger className='-ml-1 cursor-pointer' />
                     <Breadcrumb>
                         <BreadcrumbList>
@@ -69,7 +70,8 @@ export default function DashboardContent() {
                         <ModeToggle />
                     </div>
                 </header>
-                <div className="flex-1 overflow-auto p-4">
+                <div className="flex-1 overflow-auto p-4 z-20">
+                    
                     {renderContent()}
 
                     {/* Footer */}
