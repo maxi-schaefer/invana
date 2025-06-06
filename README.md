@@ -1,5 +1,12 @@
 # Invana
 
+<p align="center">
+  <img src="./assets/dashboard.png" width="270" />
+  <img src="./assets/script-library.png" width="270" />
+  <img src="./assets/agent-inventory.png" width="270" />
+  <img src="./assets/version-history.png" width="270" />
+</p>
+
 **Invana** is an open-source, self-hosted monitoring system designed to 
 track service versions running on your servers. Built with flexibility and privacy
 in mind, Invana helps teams gain visibility into the version landscape of their infrastructure.

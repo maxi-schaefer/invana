@@ -29,7 +29,7 @@ public class Agent {
 
     @CreationTimestamp
     @Column(updatable = false, name = "created_at")
-    private Date createdAt; 
+    private Date createdAt;
 
     private LocalDateTime lastSeen;
 
