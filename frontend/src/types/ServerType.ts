@@ -8,4 +8,5 @@ export default interface ServerType {
     status: "CONNECTED" | "DISCONNECTED" | "UNAUTHORIZED" | "PENDING";
     services: number;
     lastSeen: string;
+    createdAt: string;
 }

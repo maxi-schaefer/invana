@@ -1,4 +1,4 @@
-import { Activity, Database, History, Home, Library, LogOut, LucideFileCog, Package, Server, Settings, UserCog } from 'lucide-react'
+import { Database, History, Home, Library, LogOut, LucideFileCog, Package, Server, Settings, UserCog } from 'lucide-react'
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '../ui/sidebar';
 import { useAuth } from '@/hooks/use-auth';
 import { DropdownMenu, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu';
@@ -8,18 +8,19 @@ import { isAdmin } from '@/utils/auth';
 import type { User } from '@/types/User';
 import { cn } from '@/lib/utils';
 import { userApi } from '@/api/impl/userApi';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 // Menu item variables
 const menuItems = [
     {
         title: "Dashboard",
         icon: Home,
-        id: "dashboard",
+        id: "",
     },
     {
         title: "Agent Inventory",
         icon: Server,
-        id: "agents inventory",
+        id: "agents-inventory",
     },
     {
         title: "Services",
@@ -37,11 +38,6 @@ const menuItems = [
         id: "history",
     },
     {
-        title: "Monitoring",
-        icon: Activity,
-        id: "monitoring",
-    },
-    {
         title: "Agent Settings",
         icon: LucideFileCog,
         id: "agents",
@@ -51,13 +47,16 @@ const menuItems = [
 
 // AppSidebar interface
 interface AppSidebarProps {
-    activeSection?: string;
     onSectionChange?: (section: string) => void;
 }
 
-export function AppSidebar({ activeSection = "dashboard", onSectionChange }: AppSidebarProps) {
-
+export function AppSidebar({  onSectionChange }: AppSidebarProps) {
     const { user, logout } = useAuth();
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    const currentPath = location.pathname.replace(/^\/dashboard\/?/, '');
+    const activeSection = currentPath || ''
 
     return (
         <Sidebar collapsible='icon' variant='inset' >
@@ -127,36 +126,20 @@ export function AppSidebar({ activeSection = "dashboard", onSectionChange }: App
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {
-                                menuItems.map((item) => (
-                                    <SidebarMenuItem className={item.admin && !isAdmin(user as User) ? "hidden" : "block" } key={item.id}>
-                                        <SidebarMenuButton tooltip={item.title} className={`${activeSection === item.id ? "border-l-2 border-primary text-primary" : "border-l-2 border-transparent text-muted-foreground"}`} isActive={activeSection === item.id} onClick={() => onSectionChange?.(item.id)}>
-                                            <item.icon className='h-4 w-4 text-muted-foreground' />
-                                            <span>{item.title}</span>
-                                        </SidebarMenuButton>
-                                    </SidebarMenuItem>
-                                ))
-                            }
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
+                                menuItems.map((item) => {
+                                    const isActive = activeSection === item.id;
+                                    const showItem = (!item.admin && !isAdmin(user as User));
 
-                {/* Quick Actions Group */}
-                <SidebarGroup>
-                    <SidebarGroupLabel>Quick Actions</SidebarGroupLabel>
-                    <SidebarGroupContent>
-                        <SidebarMenu>
-                            <SidebarMenuItem>
-                                <SidebarMenuButton onClick={() => onSectionChange?.('agents inventory')}>
-                                    <Server className='h-4 w-4' />
-                                    <span>Add Server</span>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                            <SidebarMenuItem>
-                                <SidebarMenuButton onClick={() => onSectionChange?.('monitoring')}>
-                                    <Package className='h-4 w-4' />
-                                    <span>Run Version Check</span>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
+                                    return (
+                                        <SidebarMenuItem className={showItem ? "hidden" : "block" } key={item.id}>
+                                            <SidebarMenuButton tooltip={item.title} className={`${isActive ? "border-l-2 border-primary text-primary" : "border-l-2 border-transparent text-muted-foreground"}`} isActive={isActive} onClick={() => navigate(`/dashboard/${item.id}`)}>
+                                                <item.icon className='h-4 w-4 text-muted-foreground' />
+                                                <span>{item.title}</span>
+                                            </SidebarMenuButton>
+                                        </SidebarMenuItem>
+                                    )
+                                })
+                            }
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>

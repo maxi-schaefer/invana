@@ -1,10 +1,10 @@
 import { Archive, Clock, Minus, RefreshCw, Search, TrendingDown, TrendingUp } from "lucide-react"
-import { Input } from "../ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
-import { Button } from "../ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
-import { Badge } from "../ui/badge"
-import DashboardHeader from "./dashboard-header"
+import { Input } from "../../components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select"
+import { Button } from "../../components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card"
+import { Badge } from "../../components/ui/badge"
+import DashboardHeader from "../../components/dashboard/dashboard-header"
 
 export default function VersionHistory() {
     // Mockup data
@@ -95,10 +95,6 @@ export default function VersionHistory() {
 
     return (
         <div className="space-y-6">
-            <div>
-                <h1 className="text-3xl text-primary font-bold tracking-tight">Version History</h1>
-                <p className="text-muted-foreground">Track version changes across your services.</p>
-            </div>
             <DashboardHeader title="Version History" description="Track version changes across your services." />
 
             <div className="flex items-center gap-4">

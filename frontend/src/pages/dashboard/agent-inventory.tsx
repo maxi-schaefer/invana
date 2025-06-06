@@ -1,23 +1,23 @@
 import type ServerType from "@/types/ServerType";
 import { useEffect, useState } from "react"
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "../ui/dialog";
-import { Button } from "../ui/button";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "../../components/ui/dialog";
+import { Button } from "../../components/ui/button";
 import { Check, LayoutGrid, List, Plus, XIcon } from "lucide-react";
-import { Badge } from "../ui/badge";
+import { Badge } from "../../components/ui/badge";
 import { agentApi } from "@/api/impl/agentApi";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
+import { Label } from "../../components/ui/label";
+import { Input } from "../../components/ui/input";
 import { toast } from "sonner";
 import { useSocket } from "@/context/SocketProvider";
 import { isAdmin } from "@/utils/auth";
 import { useAuth } from "@/hooks/use-auth";
 import type { User } from "@/types/User";
-import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
-import AgentCardGrid from "../agent-view/AgentCardGrid";
-import AgentCardList from "../agent-view/AgentCardList";
-import Loading from "../ui/loading";
-import AgentEnvironmentSelect from "../agent-view/AgentEnvironmentSelect";
-import DashboardHeader from "./dashboard-header";
+import { Tabs, TabsList, TabsTrigger } from "../../components/ui/tabs";
+import AgentCardGrid from "../../components/agent-view/AgentCardGrid";
+import AgentCardList from "../../components/agent-view/AgentCardList";
+import Loading from "../../components/ui/loading";
+import AgentEnvironmentSelect from "../../components/agent-view/AgentEnvironmentSelect";
+import DashboardHeader from "../../components/dashboard/dashboard-header";
 
 export default function AgentInventory() {
     const [servers, setServers] = useState<ServerType[]>([]);

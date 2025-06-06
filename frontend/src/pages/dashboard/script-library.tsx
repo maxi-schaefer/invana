@@ -1,25 +1,25 @@
 import { Database, Globe, MoreHorizontal, Package, Plus, Puzzle, Search, Settings, Trash, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Input } from "../ui/input";
-import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
+import { Input } from "../../components/ui/input";
+import { Tabs, TabsList, TabsTrigger } from "../../components/ui/tabs";
 import { TabsContent } from "@radix-ui/react-tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
 import { getBadgeStyle } from "@/lib/utils";
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
+import { Badge } from "../../components/ui/badge";
+import { Button } from "../../components/ui/button";
 import { scriptApi } from "@/api/impl/scriptApi";
-import Loading from "../ui/loading";
-import { LinuxCommand } from "../ui/linux-command";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import Loading from "../../components/ui/loading";
+import { LinuxCommand } from "../../components/ui/linux-command";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "../../components/ui/dropdown-menu";
 import { isAdmin } from "@/utils/auth";
 import { useAuth } from "@/hooks/use-auth";
 import type { User } from "@/types/User";
 import { useSocket } from "@/context/SocketProvider";
 import { toast } from "sonner";
-import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
-import { Label } from "../ui/label";
-import { Textarea } from "../ui/textarea";
-import DashboardHeader from "./dashboard-header";
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../../components/ui/dialog";
+import { Label } from "../../components/ui/label";
+import { Textarea } from "../../components/ui/textarea";
+import DashboardHeader from "../../components/dashboard/dashboard-header";
 
 type ScriptItem = {
   id?: string;

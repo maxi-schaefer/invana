@@ -3,8 +3,10 @@ package dev.max.invana.entities;
 import dev.max.invana.enums.AgentStatus;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Data
@@ -24,6 +26,10 @@ public class Agent {
 
     @Enumerated(EnumType.STRING)
     private AgentStatus status;
+
+    @CreationTimestamp
+    @Column(updatable = false, name = "created_at")
+    private Date createdAt; 
 
     private LocalDateTime lastSeen;
 

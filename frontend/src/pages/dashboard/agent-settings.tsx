@@ -1,23 +1,23 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Check, Clock, Command, Copy, Download, Eye, EyeOff, FileCog, Key, RefreshCw, Server, UploadCloud } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card";
+import { Label } from "../../components/ui/label";
+import { Input } from "../../components/ui/input";
+import { Button } from "../../components/ui/button";
 import { toast } from "sonner";
-import { Separator } from "../ui/separator";
-import { Switch } from "../ui/switch";
+import { Separator } from "../../components/ui/separator";
+import { Switch } from "../../components/ui/switch";
 import { Select } from "@radix-ui/react-select";
-import { SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { Textarea } from "../ui/textarea";
+import { SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
+import { Textarea } from "../../components/ui/textarea";
 import { type AgentSettings } from "@/types/AgentSettings";
 import { agentSettingsApi } from "@/api/impl/agentSettings";
-import Loading from "../ui/loading";
-import ServerUrlInput from "../ui/server-url-input";
-import { LinuxCommand } from "../ui/linux-command";
-import DashboardHeader from "./dashboard-header";
+import Loading from "../../components/ui/loading";
+import ServerUrlInput from "../../components/ui/server-url-input";
+import { LinuxCommand } from "../../components/ui/linux-command";
+import DashboardHeader from "../../components/dashboard/dashboard-header";
 
 export default function AgentSettings() {
     const [showToken, setShowToken] = useState(false);

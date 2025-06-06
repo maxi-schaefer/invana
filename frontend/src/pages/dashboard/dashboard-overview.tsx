@@ -1,20 +1,49 @@
 import { AlertTriangle, CheckCircle, Clock, Package, Server, TrendingUp } from 'lucide-react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
-import { Badge } from '../ui/badge'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card'
+import { Badge } from '../../components/ui/badge'
 import { getBadgeStyle } from '@/lib/utils'
-import { Button } from '../ui/button'
-import DashboardHeader from './dashboard-header'
+import { Button } from '../../components/ui/button'
+import DashboardHeader from '../../components/dashboard/dashboard-header'
+import { useEffect, useState } from 'react'
+import type ServerType from '@/types/ServerType'
+import { agentApi } from '@/api/impl/agentApi'
 
 export default function DashboardOverview() {
+  const [servers, setServers] = useState<ServerType[]>([])
+
+  const fetchServers = async () => {
+    try {
+      const res = await agentApi.getAgents();
+      setServers(res.data as any)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  useEffect(() => {
+    fetchServers();
+  });
+
+  // Trend calculation
+  const now = new Date();
+  const thisMonth = servers.filter(server => new Date(server.createdAt).getMonth() === now.getMonth() && new Date(server.createdAt).getFullYear() === now.getFullYear()).length
+  const lastMonth = servers.filter(server => {
+    const date = new Date(server.createdAt)
+    const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1)
+    return date.getMonth() === lastMonthDate.getMonth() && date.getFullYear() === lastMonthDate.getFullYear();
+  })
+
+  const trend = thisMonth - lastMonth.length;
+  const trendText = `${trend >= 0 ? "+" : ""}${trend} this month`
 
   // Stats data
   const stats = [
     {
       title: "Total Servers",
-      value: "5",
+      value: servers.length,
       description: "Servers in inventory",
       icon: Server,
-      trend: "+3 this month",
+      trend: trendText,
       iconColor: "text-primary"
     },
     {
@@ -71,18 +100,15 @@ export default function DashboardOverview() {
   const serversByEnvironment = [
     {
       env: "Production",
-      count: 3,
-      status: "healthy",
+      count: servers.filter(server => server.environment.toLowerCase() === "production").length,
     },
     {
       env: "Staging",
-      count: 1,
-      status: "warning",
+      count: servers.filter(server => server.environment.toLowerCase() === "staging").length,
     },
     {
       env: "Development",
-      count: 2,
-      status: "healthy",
+      count: servers.filter(server => server.environment.toLowerCase() === "development").length,
     },
   ]
 
