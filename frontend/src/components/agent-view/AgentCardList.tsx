@@ -31,8 +31,11 @@ export default function AgentCardList({ servers, onDeny }: { servers: ServerType
                                 <p className="font-medium">{server.name}</p>
                                 <p className="text-sm text-muted-foreground">{server.ip}</p>
                             </div>
-                            <Badge className={getBadgeStyle(server.status)}>{server.status}</Badge>
-                            <Badge className={getBadgeStyle(server.environment)}>{server.environment}</Badge>
+
+                            <div className='flex gap-2 flex-col md:flex-row'>
+                                <Badge className={getBadgeStyle(server.status)}>{server.status}</Badge>
+                                <Badge className={getBadgeStyle(server.environment)}>{server.environment}</Badge>
+                            </div>
                         </div>
 
                         <div>

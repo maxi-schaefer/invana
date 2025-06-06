@@ -146,10 +146,10 @@ export default function AgentInventory() {
     return (
         <div className="space-y-6">
 
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between flex-col md:flex-row">
                 <DashboardHeader title="Agent Inventory" description="Manage servers in your infrastructure" />
 
-                <div className="flex gap-4">
+                <div className="flex gap-4 flex-col md:flex-row">
 
                     <Tabs value={viewState} onValueChange={(value) => {setViewState(value);localStorage.setItem("agent-view", value)}} >
                         <TabsList className="w-xs grid grid-cols-2">

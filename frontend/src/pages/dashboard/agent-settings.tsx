@@ -253,7 +253,7 @@ export default function AgentSettings() {
 
                 {/* Deployment Tab */}
                 <TabsContent value="deployment" className="space-y-6">
-                    <Card>
+                    <Card className="max-w-xl md:max-w-full">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <Download className="h-5 w-5" />
@@ -263,44 +263,6 @@ export default function AgentSettings() {
                         </CardHeader>
 
                         <CardContent className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-                                {/* Universal Download */}
-                                <Card className="border-2">
-                                    <CardHeader>
-                                        <CardTitle className="text-lg">Universal Agent</CardTitle>
-                                        <CardDescription>For Linux, Windows and everything which runs python</CardDescription>
-                                    </CardHeader>
-                                    <CardContent className="space-y-3">
-                                        <Button className="w-full" variant={"outline"}>
-                                            <Download className="h-4 w-4 mr-2" />
-                                            Download .py
-                                        </Button>
-                                    </CardContent>
-                                </Card>
-
-                                {/* Containerized download */}
-                                <Card className="border-2">
-                                    <CardHeader className="pb-3">
-                                        <CardTitle className="text-lg">Docker Agent</CardTitle>
-                                        <CardDescription>Containerized deployment</CardDescription>
-                                    </CardHeader>
-
-                                    <CardContent className="space-y-3">
-                                        <Button className="w-full" variant={"outline"}>
-                                            <Download className="h-4 w-4 mr-2" />
-                                            Docker Compose
-                                        </Button>
-                                        <Button className="w-full" variant={"outline"}>
-                                            <Download className="h-4 w-4 mr-2" />
-                                            Kubernetes YAML
-                                        </Button>
-                                    </CardContent>
-                                </Card>
-                            </div>
-
-                            <Separator />
-
                             <div className="space-y-3">
                                 <div className="flex items-center text-lg font-medium">
                                     <Command className="h-5 w-5 mr-2 text-muted-foreground" />

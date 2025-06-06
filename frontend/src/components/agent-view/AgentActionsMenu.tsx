@@ -18,7 +18,7 @@ export default function AgentActionsMenu({ onDeny, server }: { onDeny: (id: stri
         <AgentSettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} agent={server}/>
 
         <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" className='-ml-3'>
                 <MoreHorizontalIcon className="h-4 w-4" />
             </Button>
         </DropdownMenuTrigger>
