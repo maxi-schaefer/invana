@@ -23,7 +23,7 @@ export default function AgentInventory() {
     const [servers, setServers] = useState<ServerType[]>([]);
     const [pendingServers, setPendingServers] = useState<ServerType[]>([]);
     const [dialogOpen, setDialogOpen] = useState(false);
-    const [viewState, setViewState] = useState("columns");
+    const [viewState, setViewState] = useState(localStorage.getItem("agent-view") || "columns");
     const [loading, setLoading] = useState(true);
     const { client } = useSocket();
     const { user } = useAuth();
@@ -151,7 +151,7 @@ export default function AgentInventory() {
 
                 <div className="flex gap-4">
 
-                    <Tabs value={viewState} onValueChange={(value) => setViewState(value)} >
+                    <Tabs value={viewState} onValueChange={(value) => {setViewState(value);localStorage.setItem("agent-view", value)}} >
                         <TabsList className="w-xs grid grid-cols-2">
                             <TabsTrigger value="columns"><LayoutGrid className="h-5 w-5 text-muted-foreground" /> Columns</TabsTrigger>
                             <TabsTrigger value="list"><List className="h-5 w-5 text-muted-foreground" /> List</TabsTrigger>
