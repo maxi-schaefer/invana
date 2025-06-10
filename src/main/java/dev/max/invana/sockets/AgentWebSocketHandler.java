@@ -6,18 +6,19 @@
     import dev.max.invana.dtos.AgentRegistrationDto;
     import dev.max.invana.dtos.AgentWebSocketMessage;
     import dev.max.invana.entities.Agent;
+    import dev.max.invana.entities.AgentVersionHistory;
     import dev.max.invana.enums.AgentStatus;
     import dev.max.invana.model.ScriptCategories;
     import dev.max.invana.repositories.AgentRepository;
+    import dev.max.invana.repositories.AgentVersionHistoryRepository;
     import dev.max.invana.services.AgentSettingsService;
     import dev.max.invana.services.FrontendNotificationService;
     import lombok.AllArgsConstructor;
     import lombok.extern.slf4j.Slf4j;
-    import org.springframework.beans.factory.annotation.Autowired;
     import org.springframework.stereotype.Component;
     import org.springframework.web.socket.*;
     import org.springframework.web.socket.handler.TextWebSocketHandler;
-    
+
     import java.io.IOException;
     import java.time.LocalDateTime;
     import java.util.*;
@@ -30,7 +31,7 @@
         private AgentRepository agentRepository;
         private AgentSettingsService agentSettingsService;
         private FrontendNotificationService frontendNotificationService;
-        private ScriptWebSocketHandler scriptWebSocketHandler;
+        private AgentVersionHistoryRepository versionHistoryRepository;
 
         private final ScriptService scriptService;
         private final Set<WebSocketSession> sessions = Collections.synchronizedSet(new HashSet<>());
@@ -66,8 +67,52 @@
             switch(msg.getType()) {
                 case REGISTER -> handleRegister(session, msg.getPayload());
                 case HEARTBEAT -> handleHeartbeat(session, msg.getPayload());
+                case VERSIONS -> handleVersionUpdate(session, msg.getPayload());
             }
         }
+
+        private void handleVersionUpdate(WebSocketSession session, Object payload) {
+            Map<String, Object> data = objectMapper.convertValue(payload, Map.class);
+            String agentId = (String) data.get("id");
+            String token = (String) data.get("token");
+
+            if (!isAuthenticated(token)) {
+                log.warn("Unauthorized version submission from agent {}", agentId);
+                return;
+            }
+
+            List<Map<String, String>> versions = (List<Map<String, String>>) data.get("versions");
+
+            Optional<Agent> agentOpt = agentRepository.findById(agentId);
+            if (agentOpt.isEmpty()) return;
+
+            Agent agent = agentOpt.get();
+            for (Map<String, String> version : versions) {
+                String service = version.get("name");
+                String newVersion = version.get("version");
+
+                Optional<AgentVersionHistory> lastEntry = versionHistoryRepository
+                        .findTopByAgentIdAndServiceOrderByTimestampDesc(agent.getId(), service);
+
+                String previous = lastEntry.map(AgentVersionHistory::getCurrentVersion).orElse(null);
+
+                if (!Objects.equals(previous, newVersion)) {
+                    AgentVersionHistory entry = new AgentVersionHistory();
+                    entry.setAgent(agent);
+                    entry.setService(service);
+                    entry.setPreviousVersion(previous);
+                    entry.setCurrentVersion(newVersion);
+                    entry.setChangeType(detectChangeType(previous, newVersion));
+                    entry.setTimestamp(LocalDateTime.now());
+                    entry.setStatus(previous == null ? "detected" : "updated");
+
+                    versionHistoryRepository.save(entry);
+                }
+            }
+
+            log.info("Saved version data from agent {}", agentId);
+        }
+
     
         public void broadcastConfig(String json) {
             synchronized (sessions) {
@@ -235,4 +280,34 @@
                 }
             }
         }
+
+        private String detectChangeType(String oldVersion, String newVersion) {
+            if (oldVersion == null) return "detected";
+            if (oldVersion.equals(newVersion)) return "none";
+
+            try {
+                String[] oldParts = oldVersion.split("\\.");
+                String[] newParts = newVersion.split("\\.");
+
+                for (int i = 0; i < Math.min(oldParts.length, newParts.length); i++) {
+                    int o = Integer.parseInt(oldParts[i]);
+                    int n = Integer.parseInt(newParts[i]);
+
+                    if (n > o) {
+                        return switch (i) {
+                            case 0 -> "major";
+                            case 1 -> "minor";
+                            default -> "patch";
+                        };
+                    } else if (n < o) {
+                        return "downgrade";
+                    }
+                }
+            } catch (Exception e) {
+                log.warn("Unable to parse versions: {} -> {}", oldVersion, newVersion);
+            }
+
+            return "unknown";
+        }
+
     }

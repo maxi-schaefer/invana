@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { ThemeProvider } from './components/theme-provider'
 import PrivateRoute from './components/private-route'
 import Login from './pages/Login'

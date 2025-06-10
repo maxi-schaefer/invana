@@ -5,51 +5,26 @@ import { Button } from "../../components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card"
 import { Badge } from "../../components/ui/badge"
 import DashboardHeader from "../../components/dashboard/dashboard-header"
+import { useEffect, useState } from "react"
+import { versionHistoryApi } from "@/api/impl/versionHistoryApi"
+import { type VersionHistory } from "@/types/VersionHistory"
 
-export default function VersionHistory() {
-    // Mockup data
-    const versionHistory = [
-        {
-            id: 1,
-            service: 'docker',
-            server: 'prod-api-02',
-            previousVersion: '24.0.6',
-            currentVersion: '24.0.7',
-            change: 'patch',
-            timestamp: '2024-10-01 12:00:00',
-            status: 'detected'
-        },
-        {
-            id: 2,
-            service: 'nginx',
-            server: 'prod-web-01',
-            previousVersion: '1.23.4',
-            currentVersion: '1.24.0',
-            change: 'minor',
-            timestamp: '2024-10-02 14:30:00',
-            status: 'updated'
-        },
-        {
-            id: 3,
-            service: 'node.js',
-            server: 'dev-app-03',
-            previousVersion: '18.16.0',
-            currentVersion: '16.6.0',
-            change: 'downgrade',
-            timestamp: '2024-10-03 09:15:00',
-            status: 'rollback'
-        },
-        {
-            id: 4,
-            service: 'mysql',
-            server: 'prod-db-01',
-            previousVersion: '8.0.28',
-            currentVersion: '8.0.30',
-            change: 'patch',
-            timestamp: '2024-10-04 11:45:00',
-            status: 'updated'
+export default function VersionHistoryDashboard() {
+    const [versionHistory, setVersionHistory] = useState<VersionHistory[] | null>([])
+
+    const fetchVersionHistory = async () => {
+        try {
+            const res = await versionHistoryApi.getAllVersionHistories();
+            console.log(res);
+            setVersionHistory(res.data)
+        } catch (error) {
+            console.error(error);
         }
-    ]
+    }
+
+    useEffect(() => {
+        fetchVersionHistory();
+    }, [])
 
     const getChangeIcon = (change: string) => {
         switch (change) {
@@ -124,19 +99,19 @@ export default function VersionHistory() {
 
             <div className="space-y-4">
                 {
-                    versionHistory.map((entry) => (
+                    versionHistory && versionHistory.map((entry) => (
                         <Card key={entry.id} className="border-l-4 border-l-primary">
                             <CardHeader>
                                 <div className="flex items-start justify-between">
                                     <div className="flex items-center gap-3">
-                                        {getChangeIcon(entry.change)}
+                                        {getChangeIcon(entry.changeType)}
                                         <div>
                                         <CardTitle className="text-lg">
-                                            {entry.service} on {entry.server}
+                                            {entry.service} on {entry.agent.name}
                                         </CardTitle>
 
                                         <CardDescription>
-                                            {entry.previousVersion} &rarr; {entry.currentVersion} ({entry.change})
+                                            {entry.previousVersion} &rarr; {entry.currentVersion} ({entry.changeType})
                                         </CardDescription>
                                         </div>
                                     </div>
@@ -160,7 +135,7 @@ export default function VersionHistory() {
                                         </div>
 
                                         <div>
-                                            <span className="font-medium">Change:</span> <Badge variant={getChangeVariant(entry.change)}>{entry.change}</Badge>
+                                            <span className="font-medium">Change:</span> <Badge variant={getChangeVariant(entry.changeType)}>{entry.changeType}</Badge>
                                         </div>
                                     </div>
                                 </div>

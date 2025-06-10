@@ -56,7 +56,7 @@ export default function Login() {
         >
             <DottedBackground />
             
-            <div className="absolute top-4 right-4">
+            <div className="absolute z-10 top-4 right-4">
                 <ModeToggle />
             </div>
 
