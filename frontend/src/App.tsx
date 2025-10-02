@@ -14,6 +14,7 @@ import AgentSettings from './pages/dashboard/agent-settings'
 import AgentInventory from './pages/dashboard/agent-inventory'
 import AccountSettings from './pages/user/account-settings'
 import { SidebarProvider } from './components/ui/sidebar'
+import ApplianceSettings from './pages/dashboard/settings'
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
               <Route path="agents" element={<AgentSettings />} />
               <Route path="agents-inventory" element={<AgentInventory />} />
               <Route path="account" element={<AccountSettings />} />
+              <Route path="settings" element={<ApplianceSettings />} />
             </Route>
           </Routes>
         </BrowserRouter>

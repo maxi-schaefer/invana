@@ -47,12 +47,14 @@ export default function AccountSettings() {
 
             formData.append("user", new Blob([JSON.stringify(userJson)], { type: "application/json" }));
             formData.append("avatar", avatarFile || "");
-
-            if(password && password !== confirmPassword) {
-                setIsUpdating(false);
-                return toast.error("Passwords don't match!");
-            } else {
-                await userApi.updatePassword(user?.id, { newPassword: password });
+            
+            if(password) {
+                if(password !== confirmPassword) {
+                    setIsUpdating(false);
+                    return toast.error("Passwords don't match!");
+                } else {
+                    await userApi.updatePassword(user?.id, { newPassword: password });
+                }
             }
             
             const res = await userApi.updateUser(user?.id, formData);

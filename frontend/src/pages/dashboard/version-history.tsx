@@ -16,7 +16,7 @@ export default function VersionHistoryDashboard() {
         try {
             const res = await versionHistoryApi.getAllVersionHistories();
             console.log(res);
-            setVersionHistory(res.data)
+            setVersionHistory(res.data as any)
         } catch (error) {
             console.error(error);
         }

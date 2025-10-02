@@ -53,6 +53,7 @@ export default function AgentSettings() {
             serverUrl: settings?.serverUrl || "",
             customHeadersJson: settings?.customHeadersJson || "",
             detailedLogging: settings?.detailedLogging || false,
+            usePublicIp: settings?.usePublicIp || false,
             retryAttempts: settings?.retryAttempts || 3,
             timeout: settings?.timeout || 30,
             tlsRequired: settings?.tlsRequired || true,
@@ -207,6 +208,14 @@ export default function AgentSettings() {
                             <div className="space-y-2">
                                     <Label htmlFor="timeout">Request Timeout (seconds)</Label>
                                     <Input id="timeout" type="number" defaultValue={settings?.timeout || 3} onChange={(e) => setSettings({...settings!, timeout: e.target.valueAsNumber })} className="max-w-xs" />
+                            </div>
+
+                            <div className="flex items-center justify-between">
+                                <div className="space-y-0.5">
+                                    <Label>Show public IP</Label>
+                                    <p className="text-sm text-muted-foreground">Agents will send either their private or public IP</p>
+                                </div>
+                                <Switch checked={settings?.detailedLogging} onCheckedChange={(e) => setSettings({ ...settings!, usePublicIp: e })} />
                             </div>
 
                             <div className="flex items-center justify-between">

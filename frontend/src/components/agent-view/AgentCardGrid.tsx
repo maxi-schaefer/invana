@@ -4,6 +4,7 @@ import { Cpu, HardDrive, Monitor, Server } from 'lucide-react'
 import { Badge } from '../ui/badge'
 import { cn, getBadgeStyle, timeAgo } from '@/lib/utils'
 import AgentActionsMenu from './AgentActionsMenu'
+import { Tooltip, TooltipTrigger, TooltipContent } from '../ui/tooltip'
 
 export default function AgentCardGrid({ servers, onDeny }: { servers: ServerType[], onDeny: (id: string) => void}) {
   return (
@@ -47,7 +48,16 @@ export default function AgentCardGrid({ servers, onDeny }: { servers: ServerType
                             <span className="text-sm">{server.services} services</span>
                         </div>
 
-                        <div className="text-sm text-muted-foreground">Last status update: <Badge variant={"outline"}>{timeAgo(server.lastSeen)}</Badge></div>
+                        <div className="text-sm text-muted-foreground">Last status update: 
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <Badge variant={"outline"}>{timeAgo(server.lastSeen)}</Badge>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>{new Date(server.lastSeen).toLocaleString()}</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </div>
                     </div>
 
                     <div className="flex justify-end">

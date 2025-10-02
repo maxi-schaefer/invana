@@ -6,6 +6,7 @@ export type AgentSettings = {
     retryAttempts: number;
     timeout: number;
     detailedLogging: boolean;
+    usePublicIp: boolean;
     serverUrl: string;
     serverPort: number;
     customHeadersJson: string;
